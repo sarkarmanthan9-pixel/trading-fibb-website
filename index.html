@@ -1,1435 +1,949 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trading Fibb | Smart Money Concept Trader</title>
-  <link rel="icon" href="logo.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --green: #39ff14;
-      --green-dim: #22c55e;
-      --green-dark: #15803d;
-      --green-deep: #052e16;
-      --bg: #020c04;
-      --bg2: #071a0a;
-      --card: #0a2010;
-      --card2: #0d2714;
-      --border: #1a4a25;
-      --text: #e8f5e9;
-      --text-muted: #86efac;
-      --gold: #fbbf24;
-      --gold-dim: #d97706;
-      --white: #f0fdf4;
-    }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Trading Fibb | Smart Money Concept Trader</title>
+<link rel="icon" href="logo.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script async src="https://iframely.net/embed.js"></script>
+<style>
+:root{
+  --ink:#03080f;
+  --navy:#060d1a;
+  --navy2:#080f1f;
+  --card:#0a1220;
+  --card2:#0c1528;
+  --border:#0f1e38;
+  --border2:#132542;
+  --cyan:#00f5ff;
+  --cyan2:#00c4cc;
+  --cyan3:#006880;
+  --green:#00ff88;
+  --green2:#00cc6a;
+  --gold:#f0c040;
+  --red:#ff3a5c;
+  --text:#b8d4ee;
+  --muted:#3d5a7a;
+  --white:#e8f4ff;
+  --gc: 0 0 30px rgba(0,245,255,.4);
+  --gg: 0 0 30px rgba(0,255,136,.4);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--ink);color:var(--text);font-family:'Syne',sans-serif;overflow-x:hidden;}
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+/* NOISE */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+  opacity:.5;}
 
-    html { scroll-behavior: smooth; }
+/* SCANLINES */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9997;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.07) 2px,rgba(0,0,0,.07) 4px);}
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Exo 2', sans-serif;
-      overflow-x: hidden;
-      cursor: none;
-    }
+/* ═══════════ INTRO ═══════════ */
+#intro{position:fixed;inset:0;z-index:9999;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s ease;}
+#intro.out{opacity:0;pointer-events:none;}
+#intro-canvas{position:absolute;inset:0;width:100%;height:100%;}
+.intro-box{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:20px;animation:riseUp .7s cubic-bezier(.16,1,.3,1) both;}
+@keyframes riseUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+.intro-logo{width:90px;filter:drop-shadow(0 0 28px var(--cyan));animation:logoPulse 2s ease infinite alternate;}
+@keyframes logoPulse{from{filter:drop-shadow(0 0 20px var(--cyan))}to{filter:drop-shadow(0 0 50px var(--cyan)) drop-shadow(0 0 80px rgba(0,245,255,.3))}}
+.intro-brand{font-family:'Orbitron',monospace;font-size:2.2rem;font-weight:900;letter-spacing:8px;color:var(--white);text-transform:uppercase;}
+.intro-brand em{color:var(--cyan);font-style:normal;text-shadow:var(--gc);}
+.intro-line{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--cyan2);letter-spacing:3px;text-transform:uppercase;}
+.intro-cursor{animation:blink .9s step-end infinite;}
+@keyframes blink{50%{opacity:0}}
+.intro-loader{width:240px;height:2px;background:rgba(0,245,255,.1);border-radius:4px;overflow:hidden;position:relative;}
+.intro-loader::after{content:'';position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));box-shadow:0 0 14px var(--cyan);animation:load 2.6s ease forwards;}
+@keyframes load{from{width:0}to{width:100%}}
+.intro-skip{position:absolute;bottom:24px;right:28px;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);cursor:pointer;letter-spacing:2px;z-index:2;transition:color .2s;}
+.intro-skip:hover{color:var(--cyan);}
 
-    /* Custom Cursor */
-    .cursor {
-      width: 12px; height: 12px;
-      background: var(--green);
-      border-radius: 50%;
-      position: fixed; top: 0; left: 0;
-      pointer-events: none; z-index: 9999;
-      transition: transform 0.1s;
-      box-shadow: 0 0 10px var(--green), 0 0 20px var(--green);
-    }
-    .cursor-follower {
-      width: 32px; height: 32px;
-      border: 1px solid var(--green);
-      border-radius: 50%;
-      position: fixed; top: 0; left: 0;
-      pointer-events: none; z-index: 9998;
-      transition: all 0.15s ease;
-      opacity: 0.5;
-    }
+/* ═══════════ NAV ═══════════ */
+nav{position:fixed;top:0;width:100%;z-index:1000;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 60px;background:rgba(3,8,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);}
+nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),var(--green),var(--cyan),transparent);opacity:.4;}
+.nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.nav-logo img{height:36px;filter:drop-shadow(0 0 10px rgba(0,245,255,.6));}
+.nav-wordmark{font-family:'Orbitron',monospace;font-size:1.05rem;font-weight:700;color:var(--white);letter-spacing:2px;}
+.nav-wordmark span{color:var(--cyan);}
+.nav-links{list-style:none;display:flex;align-items:center;gap:32px;}
+.nav-links a{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;transition:color .2s;position:relative;}
+.nav-links a:not(.nav-cta)::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--cyan);transition:width .3s;}
+.nav-links a:not(.nav-cta):hover{color:var(--cyan);}
+.nav-links a:not(.nav-cta):hover::after{width:100%;}
+.nav-cta{background:transparent !important;border:1px solid var(--cyan) !important;color:var(--cyan) !important;padding:8px 24px !important;border-radius:1px !important;font-family:'Orbitron',monospace !important;font-size:.65rem !important;font-weight:700 !important;letter-spacing:2px !important;box-shadow:0 0 18px rgba(0,245,255,.18),inset 0 0 18px rgba(0,245,255,.04) !important;transition:all .25s !important;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%) !important;}
+.nav-cta:hover{background:rgba(0,245,255,.07) !important;box-shadow:0 0 36px rgba(0,245,255,.5),inset 0 0 18px rgba(0,245,255,.08) !important;transform:translateY(-1px);color:var(--white) !important;}
+.nav-cta::after{display:none !important;}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+.hamburger span{width:22px;height:1.5px;background:var(--cyan);display:block;transition:.3s;}
 
-    /* Scanline overlay */
-    body::before {
-      content: '';
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
-      pointer-events: none; z-index: 9997;
-    }
+/* ═══════════ PAGE SYSTEM ═══════════ */
+.page{display:none;}
+.page.active{display:block;}
 
-    /* ========== NAVBAR ========== */
-    nav {
-      position: fixed; top: 0; width: 100%; z-index: 1000;
-      padding: 0 40px;
-      display: flex; align-items: center; justify-content: space-between;
-      background: rgba(2, 12, 4, 0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      height: 68px;
-    }
-    .nav-logo {
-      display: flex; align-items: center; gap: 12px;
-      text-decoration: none;
-    }
-    .nav-logo img { height: 42px; filter: drop-shadow(0 0 8px var(--green)); }
-    .nav-logo span {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 1.4rem; font-weight: 700;
-      color: var(--white);
-      letter-spacing: 1px;
-    }
-    .nav-logo span em {
-      color: var(--green); font-style: normal;
-      text-shadow: 0 0 10px var(--green);
-    }
-    .nav-links {
-      display: flex; align-items: center; gap: 32px;
-      list-style: none;
-    }
-    .nav-links a {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 0.95rem; font-weight: 600;
-      color: var(--text-muted); text-decoration: none;
-      letter-spacing: 1.5px; text-transform: uppercase;
-      transition: color 0.2s;
-      position: relative;
-    }
-    .nav-links a::after {
-      content: ''; position: absolute; bottom: -4px; left: 0;
-      width: 0; height: 1px; background: var(--green);
-      transition: width 0.3s;
-    }
-    .nav-links a:hover { color: var(--green); }
-    .nav-links a:hover::after { width: 100%; }
-    .nav-cta {
-      background: var(--green); color: var(--bg) !important;
-      padding: 8px 20px !important; border-radius: 4px;
-      font-weight: 700 !important;
-      box-shadow: 0 0 16px rgba(57,255,20,0.35);
-      transition: box-shadow 0.2s, transform 0.2s !important;
-    }
-    .nav-cta:hover { box-shadow: 0 0 28px rgba(57,255,20,0.6) !important; transform: translateY(-1px); }
-    .nav-cta::after { display: none !important; }
-    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
-    .hamburger span { width: 24px; height: 2px; background: var(--green); display: block; transition: 0.3s; }
+/* ═══════════ HERO ═══════════ */
+#hero{min-height:100vh;position:relative;display:flex;align-items:center;padding-top:64px;overflow:hidden;}
+.hero-bg-photo{position:absolute;inset:0;background:url('website_theme.png') center/cover no-repeat;opacity:.78;filter:saturate(1.1) brightness(.68);}
+#hero-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;mix-blend-mode:screen;opacity:.45;}
+.hero-vignette{position:absolute;inset:0;z-index:1;background:linear-gradient(100deg, rgba(2,6,10,.97) 0%, rgba(2,6,10,.9) 28%, rgba(2,6,10,.38) 56%, rgba(2,6,10,.06) 100%),linear-gradient(to top, rgba(2,6,10,1) 0%, rgba(2,6,10,.55) 14%, transparent 38%),linear-gradient(to bottom, rgba(2,6,10,.5) 0%, transparent 15%);}
+.hero-content{position:relative;z-index:2;padding:100px 80px;max-width:620px;}
+.hero-chip{display:inline-flex;align-items:center;gap:10px;padding:6px 16px;border:1px solid rgba(0,245,255,.22);background:rgba(0,245,255,.04);border-radius:1px;margin-bottom:28px;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--cyan);letter-spacing:2.5px;text-transform:uppercase;}
+.chip-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:dotPulse 1.8s ease infinite;}
+@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+.hero-h1{font-family:'Orbitron',monospace;font-size:clamp(2.6rem,4.8vw,5rem);font-weight:900;line-height:1.05;letter-spacing:-1.5px;color:var(--white);}
+.hero-h1 .t-cyan{display:block;color:var(--cyan);text-shadow:0 0 50px rgba(0,245,255,.45);}
+.hero-h1 .t-green{display:block;color:var(--green);text-shadow:0 0 50px rgba(0,255,136,.35);}
+.hero-sub{font-size:1rem;color:var(--text);line-height:1.8;max-width:500px;margin:24px 0 38px;opacity:.88;}
+.hero-stats{display:flex;gap:44px;margin-bottom:44px;padding:24px 28px;background:rgba(0,245,255,.025);border:1px solid var(--border2);border-radius:2px;width:fit-content;}
+.hstat-val{font-family:'Orbitron',monospace;font-size:2rem;font-weight:700;color:var(--cyan);text-shadow:var(--gc);}
+.hstat-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;}
 
-    /* ========== PAGE SYSTEM ========== */
-    .page { display: none; }
-    .page.active { display: block; }
+/* BUTTONS */
+.btn-p{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--cyan),var(--cyan2));color:#020917;border:none;padding:14px 32px;font-family:'Orbitron',monospace;font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;box-shadow:0 0 32px rgba(0,245,255,.35);transition:all .25s;text-decoration:none;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);}
+.btn-p:hover{box-shadow:0 0 60px rgba(0,245,255,.65);transform:translateY(-2px);}
+.btn-o{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--green);border:1px solid var(--green);padding:14px 32px;font-family:'Orbitron',monospace;font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;box-shadow:0 0 18px rgba(0,255,136,.1);transition:all .25s;text-decoration:none;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);}
+.btn-o:hover{background:rgba(0,255,136,.06);box-shadow:0 0 38px rgba(0,255,136,.4);transform:translateY(-2px);}
 
-    /* ========== HERO ========== */
-    #hero {
-      min-height: 100vh;
-      position: relative; overflow: hidden;
-      display: flex; align-items: center;
-      padding-top: 68px;
-    }
-    .hero-bg {
-      position: absolute; inset: 0;
-      background-image: url('website_theme.png');
-      background-size: cover; background-position: center;
-      filter: brightness(0.35) saturate(1.2);
-    }
-    .hero-bg::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(to right, rgba(2,12,4,0.85) 40%, transparent 100%),
-                  linear-gradient(to top, rgba(2,12,4,0.9) 0%, transparent 60%);
-    }
-    .hero-content {
-      position: relative; z-index: 2;
-      max-width: 700px; padding: 80px 80px;
-    }
-    .hero-tag {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(57,255,20,0.1); border: 1px solid rgba(57,255,20,0.3);
-      padding: 6px 16px; border-radius: 2px;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.75rem; color: var(--green);
-      letter-spacing: 2px; margin-bottom: 24px;
-      animation: fadeUp 0.6s ease forwards;
-    }
-    .hero-tag span { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 1.5s infinite; }
-    .hero-title {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: clamp(2.8rem, 5vw, 5rem);
-      font-weight: 700; line-height: 1.05;
-      color: var(--white); margin-bottom: 8px;
-      animation: fadeUp 0.6s 0.1s ease both;
-    }
-    .hero-title .accent {
-      color: var(--green);
-      text-shadow: 0 0 30px rgba(57,255,20,0.5);
-      display: block;
-    }
-    .hero-subtitle {
-      font-size: 1.1rem; color: var(--text-muted);
-      margin-bottom: 32px; line-height: 1.7; max-width: 520px;
-      animation: fadeUp 0.6s 0.2s ease both;
-    }
-    .hero-stats {
-      display: flex; gap: 40px; margin-bottom: 40px;
-      animation: fadeUp 0.6s 0.3s ease both;
-    }
-    .hero-stat { text-align: left; }
-    .hero-stat-num {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 2rem; font-weight: 700;
-      color: var(--green); text-shadow: 0 0 16px rgba(57,255,20,0.4);
-    }
-    .hero-stat-label {
-      font-size: 0.75rem; color: var(--text-muted);
-      letter-spacing: 1px; text-transform: uppercase;
-    }
-    .hero-btns {
-      display: flex; gap: 16px; flex-wrap: wrap;
-      animation: fadeUp 0.6s 0.4s ease both;
-    }
-    .btn-primary {
-      background: var(--green); color: var(--bg);
-      padding: 14px 32px; border-radius: 4px;
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 1rem; font-weight: 700;
-      letter-spacing: 1.5px; text-transform: uppercase;
-      border: none; cursor: pointer;
-      box-shadow: 0 0 24px rgba(57,255,20,0.4);
-      transition: all 0.2s; text-decoration: none; display: inline-block;
-    }
-    .btn-primary:hover { box-shadow: 0 0 40px rgba(57,255,20,0.7); transform: translateY(-2px); }
-    .btn-secondary {
-      background: transparent; color: var(--green);
-      padding: 14px 32px; border-radius: 4px;
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 1rem; font-weight: 700;
-      letter-spacing: 1.5px; text-transform: uppercase;
-      border: 1px solid var(--green);
-      cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block;
-    }
-    .btn-secondary:hover { background: rgba(57,255,20,0.08); transform: translateY(-2px); }
+/* HERO BADGE */
+.hero-badge{position:absolute;right:80px;bottom:80px;z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.hbadge-ring{width:130px;height:130px;border-radius:50%;border:1px solid rgba(0,245,255,.2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(0,245,255,.03);box-shadow:0 0 40px rgba(0,245,255,.08),inset 0 0 30px rgba(0,245,255,.04);animation:spin 18s linear infinite;}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.hbadge-inner{display:flex;flex-direction:column;align-items:center;animation:spinReverse 18s linear infinite;}
+@keyframes spinReverse{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+.hbadge-num{font-family:'Orbitron',monospace;font-size:1.7rem;font-weight:900;color:var(--cyan);text-shadow:var(--gc);}
+.hbadge-txt{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;text-align:center;}
 
-    /* Ticker */
-    .ticker-bar {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      background: rgba(5,46,22,0.8); border-top: 1px solid var(--border);
-      padding: 10px 0; overflow: hidden; z-index: 2;
-    }
-    .ticker-inner {
-      display: flex; gap: 60px; width: max-content;
-      animation: ticker 30s linear infinite;
-    }
-    .ticker-item {
-      display: flex; align-items: center; gap: 10px;
-      font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
-      white-space: nowrap;
-    }
-    .ticker-name { color: var(--text-muted); }
-    .ticker-price { color: var(--white); font-weight: 600; }
-    .ticker-change.up { color: var(--green); }
-    .ticker-change.down { color: #f87171; }
-    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* ═══════════ DIVIDER ═══════════ */
+.sec-divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--cyan3),var(--cyan),var(--green),var(--cyan),var(--cyan3),transparent);opacity:.3;}
 
-    /* ========== SECTIONS COMMON ========== */
-    section { padding: 80px 80px; }
-    .section-tag {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.7rem; color: var(--green);
-      letter-spacing: 3px; text-transform: uppercase;
-      margin-bottom: 12px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .section-tag::before { content: '//'; }
-    .section-title {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: clamp(1.8rem, 3vw, 2.8rem);
-      font-weight: 700; color: var(--white);
-      margin-bottom: 16px;
-    }
-    .section-title .g { color: var(--green); }
-    .section-desc { color: var(--text-muted); max-width: 560px; line-height: 1.7; margin-bottom: 48px; }
+/* ═══════════ SECTION COMMONS ═══════════ */
+section{padding:96px 80px;}
+.s-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;margin-bottom:12px;}
+.s-eyebrow::before{content:'//';color:var(--green);font-size:.7rem;}
+.s-title{font-family:'Orbitron',monospace;font-size:clamp(1.8rem,2.8vw,2.8rem);font-weight:700;color:var(--white);line-height:1.12;letter-spacing:-.5px;margin-bottom:14px;}
+.s-title .c{color:var(--cyan);}
+.s-title .g{color:var(--green);}
+.s-desc{color:var(--muted);line-height:1.8;font-size:.93rem;max-width:580px;margin-bottom:52px;}
 
-    /* ========== ABOUT STRIP ========== */
-    #about-strip {
-      background: var(--bg2);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 60px 80px;
-    }
-    .about-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 60px; align-items: center;
-    }
-    .about-img-wrap {
-      position: relative;
-    }
-    .about-img-wrap img {
-      width: 100%; border-radius: 8px;
-      filter: brightness(0.7) saturate(1.3);
-      border: 1px solid var(--border);
-    }
-    .about-img-wrap::after {
-      content: ''; position: absolute;
-      inset: 0; border-radius: 8px;
-      background: linear-gradient(135deg, rgba(57,255,20,0.08), transparent);
-    }
-    .about-badge {
-      position: absolute; bottom: -16px; right: -16px;
-      background: var(--card2); border: 1px solid var(--border);
-      padding: 16px 24px; border-radius: 6px;
-      font-family: 'Rajdhani', sans-serif; font-size: 1rem;
-    }
-    .about-badge strong {
-      display: block; font-size: 1.6rem;
-      color: var(--green); text-shadow: 0 0 10px rgba(57,255,20,0.4);
-    }
-    .about-features { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
-    .about-feat {
-      display: flex; align-items: flex-start; gap: 14px;
-      background: var(--card); border: 1px solid var(--border);
-      padding: 16px 20px; border-radius: 6px;
-      transition: border-color 0.2s;
-    }
-    .about-feat:hover { border-color: var(--green-dim); }
-    .about-feat-icon {
-      font-size: 1.4rem; min-width: 36px;
-      text-align: center; padding-top: 2px;
-    }
-    .about-feat-text strong {
-      display: block; font-family: 'Rajdhani', sans-serif;
-      font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 4px;
-    }
-    .about-feat-text span { font-size: 0.85rem; color: var(--text-muted); }
+/* ═══════════ TRUST BAR ═══════════ */
+#trust{padding:20px 80px;background:var(--navy2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.trust-bar{display:flex;align-items:center;justify-content:center;gap:60px;flex-wrap:wrap;}
+.trust-item{display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:.73rem;color:var(--muted);letter-spacing:1px;}
+.trust-icon{font-size:1.3rem;}
+.trust-item strong{color:var(--white);}
 
-    /* ========== WHAT WE OFFER ========== */
-    #offer { background: var(--bg); }
-    .offer-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
-    }
-    .offer-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 8px; padding: 32px;
-      position: relative; overflow: hidden;
-      transition: all 0.3s; cursor: default;
-    }
-    .offer-card::before {
-      content: ''; position: absolute;
-      top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--green), transparent);
-      opacity: 0; transition: opacity 0.3s;
-    }
-    .offer-card:hover { border-color: var(--green-dim); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
-    .offer-card:hover::before { opacity: 1; }
-    .offer-icon {
-      font-size: 2rem; margin-bottom: 16px;
-      width: 56px; height: 56px;
-      background: rgba(57,255,20,0.08); border: 1px solid rgba(57,255,20,0.2);
-      border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    }
-    .offer-card h3 {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 1.2rem; font-weight: 700; color: var(--white); margin-bottom: 10px;
-    }
-    .offer-card p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.7; }
+/* ═══════════ ABOUT ═══════════ */
+#about{background:var(--navy);position:relative;overflow:hidden;}
+#about::before{content:'';position:absolute;top:-300px;right:-300px;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(0,245,255,.03) 0%,transparent 70%);pointer-events:none;}
+.about-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:80px;align-items:center;}
+.about-visual{position:relative;}
+.about-frame{position:relative;border-radius:2px;overflow:hidden;border:1px solid var(--border2);}
+.about-frame img{width:100%;display:block;filter:brightness(.7) saturate(1.3);transition:.4s;}
+.about-frame:hover img{filter:brightness(.85) saturate(1.4);}
+.about-frame::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,245,255,.07) 0%,transparent 50%),linear-gradient(to top,rgba(6,13,26,.8) 0%,transparent 40%);}
+/* corner brackets */
+.corner{position:absolute;width:24px;height:24px;z-index:2;}
+.corner-tl{top:-1px;left:-1px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan);}
+.corner-tr{top:-1px;right:-1px;border-top:2px solid var(--cyan);border-right:2px solid var(--cyan);}
+.corner-bl{bottom:-1px;left:-1px;border-bottom:2px solid var(--green);border-left:2px solid var(--green);}
+.corner-br{bottom:-1px;right:-1px;border-bottom:2px solid var(--green);border-right:2px solid var(--green);}
+.about-floating{position:absolute;bottom:-24px;right:-24px;background:var(--card2);border:1px solid var(--border2);padding:20px 26px;border-radius:2px;box-shadow:0 16px 48px rgba(0,0,0,.7),0 0 0 1px rgba(0,245,255,.07);z-index:3;}
+.about-fl-val{font-family:'Orbitron',monospace;font-size:2rem;font-weight:700;color:var(--cyan);text-shadow:var(--gc);line-height:1;}
+.about-fl-lbl{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:1.5px;margin-top:4px;}
+.about-feats{margin-top:36px;display:flex;flex-direction:column;gap:12px;}
+.afeat{display:flex;align-items:flex-start;gap:16px;padding:18px 20px;background:rgba(0,245,255,.02);border:1px solid var(--border);border-left:2px solid var(--cyan);border-radius:1px;transition:all .25s;}
+.afeat:hover{background:rgba(0,245,255,.04);border-left-color:var(--green);transform:translateX(4px);}
+.afeat-ico{font-size:1.3rem;min-width:30px;line-height:1.4;}
+.afeat h4{font-size:.92rem;font-weight:700;color:var(--white);margin-bottom:3px;}
+.afeat p{font-size:.8rem;color:var(--muted);line-height:1.65;}
 
-    /* ========== COURSES ========== */
-    #courses { background: var(--bg2); }
-    .courses-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
-    .course-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 10px; overflow: hidden;
-      transition: all 0.3s;
-      position: relative;
-    }
-    .course-card:hover { transform: translateY(-6px); box-shadow: 0 16px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(57,255,20,0.2); }
-    .course-card.featured {
-      border-color: var(--green);
-      box-shadow: 0 0 30px rgba(57,255,20,0.15);
-    }
-    .course-badge {
-      position: absolute; top: 16px; right: 16px;
-      background: var(--gold); color: #1a0000;
-      font-family: 'Rajdhani', sans-serif; font-size: 0.7rem;
-      font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-      padding: 4px 10px; border-radius: 2px;
-    }
-    .course-badge.new { background: var(--green); color: var(--bg); }
-    .course-img {
-      height: 160px; background: linear-gradient(135deg, #071a0a, #0d2714);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 3rem; border-bottom: 1px solid var(--border);
-      position: relative; overflow: hidden;
-    }
-    .course-img::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(57,255,20,0.05), transparent);
-    }
-    .course-body { padding: 24px; }
-    .course-level {
-      font-family: 'Share Tech Mono', monospace; font-size: 0.65rem;
-      color: var(--green); letter-spacing: 2px; text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-    .course-body h3 {
-      font-family: 'Rajdhani', sans-serif; font-size: 1.2rem;
-      font-weight: 700; color: var(--white); margin-bottom: 10px;
-    }
-    .course-body p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 20px; }
-    .course-meta {
-      display: flex; gap: 16px; margin-bottom: 20px;
-      font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--text-muted);
-    }
-    .course-meta span { display: flex; align-items: center; gap: 4px; }
-    .course-price {
-      display: flex; align-items: center; justify-content: space-between;
-      padding-top: 16px; border-top: 1px solid var(--border);
-    }
-    .price-tag {
-      font-family: 'Rajdhani', sans-serif; font-size: 1.6rem;
-      font-weight: 700; color: var(--green);
-    }
-    .price-tag small {
-      font-size: 0.8rem; color: var(--text-muted);
-      text-decoration: line-through; margin-left: 8px;
-    }
-    .btn-enroll {
-      background: var(--green); color: var(--bg);
-      border: none; padding: 10px 20px; border-radius: 4px;
-      font-family: 'Rajdhani', sans-serif; font-size: 0.9rem;
-      font-weight: 700; letter-spacing: 1px; cursor: pointer;
-      transition: all 0.2s; text-decoration: none; display: inline-block;
-    }
-    .btn-enroll:hover { box-shadow: 0 0 20px rgba(57,255,20,0.5); transform: translateY(-1px); }
-    .btn-enroll-outline {
-      background: transparent; color: var(--green);
-      border: 1px solid var(--green); padding: 10px 20px; border-radius: 4px;
-      font-family: 'Rajdhani', sans-serif; font-size: 0.9rem;
-      font-weight: 700; letter-spacing: 1px; cursor: pointer;
-      transition: all 0.2s; text-decoration: none; display: inline-block;
-    }
-    .btn-enroll-outline:hover { background: rgba(57,255,20,0.08); }
+/* ═══════════ PILLARS ═══════════ */
+#pillars{background:var(--navy2);}
+.pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.pillar{background:var(--card);border:1px solid var(--border);border-radius:2px;padding:32px 28px;position:relative;overflow:hidden;transition:all .3s;}
+.pillar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--green));opacity:0;transition:.3s;}
+.pillar::after{content:'';position:absolute;bottom:-60px;right:-60px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(0,245,255,.04),transparent 70%);transition:.3s;}
+.pillar:hover{border-color:rgba(0,245,255,.18);transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 1px rgba(0,245,255,.07);}
+.pillar:hover::before{opacity:1;}
+.pillar-num{font-family:'Orbitron',monospace;font-size:.68rem;color:var(--cyan3);letter-spacing:2px;margin-bottom:16px;}
+.pillar-ico{font-size:2rem;margin-bottom:14px;display:block;}
+.pillar h3{font-family:'Syne',sans-serif;font-size:.98rem;font-weight:700;color:var(--white);margin-bottom:10px;}
+.pillar p{font-size:.82rem;color:var(--muted);line-height:1.7;}
 
-    /* ========== TESTIMONIALS ========== */
-    #testimonials { background: var(--bg); }
-    .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .testi-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 10px; padding: 28px;
-      transition: border-color 0.2s;
-    }
-    .testi-card:hover { border-color: rgba(57,255,20,0.3); }
-    .testi-stars { color: var(--gold); margin-bottom: 14px; font-size: 0.9rem; }
-    .testi-text { font-size: 0.875rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; font-style: italic; }
-    .testi-author { display: flex; align-items: center; gap: 12px; }
-    .testi-avatar {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--green-dark), var(--green-dim));
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Rajdhani', sans-serif; font-weight: 700;
-      color: var(--white); font-size: 1rem;
-    }
-    .testi-name {
-      font-family: 'Rajdhani', sans-serif; font-weight: 700;
-      color: var(--white); font-size: 0.95rem;
-    }
-    .testi-city { font-size: 0.75rem; color: var(--text-muted); }
+/* ═══════════ COURSES ═══════════ */
+#courses-home{background:var(--navy);}
+.courses-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+.c-card{background:var(--card);border:1px solid var(--border);border-radius:2px;overflow:hidden;position:relative;transition:all .35s;}
+.c-card.feat{border-color:rgba(0,245,255,.25);box-shadow:0 0 50px rgba(0,245,255,.07);}
+.c-card:hover{transform:translateY(-8px);box-shadow:0 24px 72px rgba(0,0,0,.65),0 0 0 1px rgba(0,245,255,.15);}
+.c-badge{position:absolute;top:12px;right:12px;z-index:3;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:1px;}
+.b-free{background:var(--green);color:#020917;}
+.b-hot{background:var(--gold);color:#020917;}
+.b-new{background:var(--cyan);color:#020917;}
+.c-thumb{height:195px;background:var(--navy2);overflow:hidden;position:relative;}
+.c-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .5s;filter:brightness(.8) saturate(1.1);}
+.c-card:hover .c-thumb img{transform:scale(1.07);}
+.c-thumb-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 25%,var(--card) 100%);}
+.c-thumb-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,var(--card),var(--navy2));}
+.c-thumb-placeholder .p-ico{font-size:3rem;}
+.c-thumb-placeholder .p-lbl{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+.c-lvl-tag{position:absolute;bottom:10px;left:14px;font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;z-index:2;}
+.c-body{padding:24px;}
+.c-level{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.c-body h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--white);margin-bottom:8px;line-height:1.3;}
+.c-body p{font-size:.8rem;color:var(--muted);line-height:1.65;margin-bottom:14px;}
+.c-meta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);}
+.c-footer{padding-top:16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.c-price{font-family:'Orbitron',monospace;font-size:1.35rem;font-weight:700;color:var(--cyan);}
+.c-price-free{font-family:'Orbitron',monospace;font-size:1.35rem;font-weight:700;color:var(--green);}
+.c-orig{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);text-decoration:line-through;margin-left:6px;}
+.btn-enroll{background:transparent;color:var(--cyan);border:1px solid var(--cyan);padding:9px 18px;font-family:'Orbitron',monospace;font-size:.62rem;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .25s;text-decoration:none;display:inline-block;border-radius:1px;}
+.btn-enroll:hover{background:rgba(0,245,255,.08);box-shadow:0 0 24px rgba(0,245,255,.35);}
+.btn-watch{background:transparent;color:var(--green);border:1px solid var(--green);padding:9px 18px;font-family:'Orbitron',monospace;font-size:.62rem;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all .25s;text-decoration:none;display:inline-block;border-radius:1px;}
+.btn-watch:hover{background:rgba(0,255,136,.07);box-shadow:0 0 24px rgba(0,255,136,.35);}
 
-    /* ========== YOUTUBE ========== */
-    #youtube { background: var(--bg2); }
-    .yt-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 48px; align-items: center; }
-    .yt-embed {
-      border-radius: 10px; overflow: hidden;
-      border: 1px solid var(--border);
-      box-shadow: 0 0 40px rgba(0,0,0,0.5);
-      aspect-ratio: 16/9;
-    }
-    .yt-embed iframe { width: 100%; height: 100%; display: block; }
-    .yt-info h2 {
-      font-family: 'Rajdhani', sans-serif; font-size: 2rem;
-      font-weight: 700; color: var(--white); margin-bottom: 16px;
-    }
-    .yt-stats {
-      display: flex; gap: 32px; margin: 24px 0;
-      flex-wrap: wrap;
-    }
-    .yt-stat-num {
-      font-family: 'Rajdhani', sans-serif; font-size: 1.8rem;
-      font-weight: 700; color: var(--green);
-    }
-    .yt-stat-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-    .btn-yt {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: #ff0000; color: #fff;
-      padding: 12px 28px; border-radius: 4px;
-      font-family: 'Rajdhani', sans-serif; font-size: 1rem;
-      font-weight: 700; letter-spacing: 1px;
-      border: none; cursor: pointer; text-decoration: none;
-      transition: all 0.2s;
-    }
-    .btn-yt:hover { background: #cc0000; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,0,0,0.3); }
+/* ═══════════ STATS BAND ═══════════ */
+#stats-band{background:linear-gradient(135deg,var(--card),var(--card2));border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:52px 80px;}
+.stats-inner{display:flex;justify-content:center;gap:0;flex-wrap:wrap;}
+.stat-block{flex:1;min-width:160px;max-width:220px;text-align:center;padding:20px;position:relative;}
+.stat-block:not(:last-child)::after{content:'';position:absolute;right:0;top:20%;height:60%;width:1px;background:var(--border2);}
+.stat-v{font-family:'Orbitron',monospace;font-size:2.6rem;font-weight:900;color:var(--cyan);text-shadow:var(--gc);line-height:1;}
+.stat-l{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:8px;}
 
-    /* ========== CONTACT ========== */
-    #contact { background: var(--bg); }
-    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
-    .contact-form { display: flex; flex-direction: column; gap: 16px; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group label {
-      font-family: 'Share Tech Mono', monospace; font-size: 0.7rem;
-      color: var(--green); letter-spacing: 1.5px; text-transform: uppercase;
-    }
-    .form-group input, .form-group textarea, .form-group select {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 4px; padding: 12px 16px;
-      color: var(--text); font-family: 'Exo 2', sans-serif; font-size: 0.9rem;
-      transition: border-color 0.2s; outline: none; resize: vertical;
-    }
-    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 12px rgba(57,255,20,0.1);
-    }
-    .form-group select option { background: var(--card2); }
-    .contact-info { display: flex; flex-direction: column; gap: 24px; }
-    .contact-item {
-      display: flex; align-items: flex-start; gap: 16px;
-      background: var(--card); border: 1px solid var(--border);
-      padding: 20px; border-radius: 8px;
-    }
-    .contact-icon { font-size: 1.5rem; min-width: 40px; text-align: center; }
-    .contact-item h4 {
-      font-family: 'Rajdhani', sans-serif; font-weight: 700;
-      color: var(--white); margin-bottom: 4px;
-    }
-    .contact-item p { font-size: 0.85rem; color: var(--text-muted); }
-    .contact-item a { color: var(--green); text-decoration: none; }
+/* ═══════════ TESTIMONIALS ═══════════ */
+#testimonials{background:var(--navy2);}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.t-card{background:var(--card);border:1px solid var(--border);border-radius:2px;padding:28px;position:relative;overflow:hidden;transition:border-color .25s;}
+.t-card::before{content:'';position:absolute;top:0;left:0;width:2px;height:0;background:linear-gradient(to bottom,var(--cyan),var(--green));transition:height .4s;}
+.t-card:hover::before{height:100%;}
+.t-card:hover{border-color:var(--border2);}
+.t-stars{color:var(--gold);font-size:.85rem;margin-bottom:12px;}
+.t-mark{font-family:'Orbitron',monospace;font-size:3rem;color:rgba(0,245,255,.1);line-height:1;margin-bottom:6px;}
+.t-text{font-size:.83rem;color:var(--text);line-height:1.75;margin-bottom:20px;font-style:italic;}
+.t-author{display:flex;align-items:center;gap:12px;}
+.t-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--cyan3),var(--cyan2));border:1px solid rgba(0,245,255,.25);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:.72rem;font-weight:700;color:var(--white);flex-shrink:0;}
+.t-name{font-weight:700;color:var(--white);font-size:.88rem;}
+.t-city{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);margin-top:2px;}
 
-    /* ========== FOOTER ========== */
-    footer {
-      background: var(--bg2); border-top: 1px solid var(--border);
-      padding: 48px 80px 24px;
-    }
-    .footer-grid {
-      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 48px; margin-bottom: 40px;
-    }
-    .footer-brand img { height: 48px; margin-bottom: 16px; filter: drop-shadow(0 0 8px rgba(57,255,20,0.4)); }
-    .footer-brand p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; max-width: 300px; }
-    .footer-socials { display: flex; gap: 12px; margin-top: 20px; }
-    .social-btn {
-      width: 36px; height: 36px;
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 6px; display: flex; align-items: center; justify-content: center;
-      text-decoration: none; font-size: 1rem; transition: all 0.2s;
-    }
-    .social-btn:hover { border-color: var(--green); background: rgba(57,255,20,0.08); }
-    .footer-col h4 {
-      font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;
-      font-weight: 700; color: var(--white);
-      letter-spacing: 1px; margin-bottom: 16px;
-      text-transform: uppercase;
-    }
-    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-    .footer-col ul li a {
-      font-size: 0.85rem; color: var(--text-muted); text-decoration: none;
-      transition: color 0.2s;
-    }
-    .footer-col ul li a:hover { color: var(--green); }
-    .footer-bottom {
-      border-top: 1px solid var(--border); padding-top: 20px;
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 0.78rem; color: var(--text-muted);
-    }
-    .disclaimer {
-      background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.2);
-      border-radius: 6px; padding: 14px 20px;
-      font-size: 0.78rem; color: #fde68a;
-      margin-bottom: 32px; line-height: 1.6;
-    }
-    .disclaimer strong { color: var(--gold); }
+/* ═══════════ YOUTUBE ═══════════ */
+#yt-sec{background:var(--navy);position:relative;overflow:hidden;}
+#yt-sec::before{content:'';position:absolute;bottom:-200px;left:-200px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,136,.03),transparent 70%);}
+.yt-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:64px;align-items:start;}
+.yt-video-wrap{border:1px solid var(--border2);border-radius:2px;overflow:hidden;aspect-ratio:16/9;box-shadow:0 0 60px rgba(0,0,0,.6),0 0 0 1px rgba(0,245,255,.04);}
+.yt-video-wrap iframe{width:100%;height:100%;display:block;}
+.yt-widget-wrap{border:1px solid var(--border);border-radius:2px;overflow:hidden;margin-top:14px;}
+.yt-right{padding-top:8px;}
+.yt-stats{display:flex;gap:36px;margin:28px 0;}
+.ys-v{font-family:'Orbitron',monospace;font-size:1.7rem;font-weight:700;color:var(--green);}
+.ys-l{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;}
+.btn-yt{display:inline-flex;align-items:center;gap:10px;background:#ff0000;color:#fff;padding:13px 30px;font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;letter-spacing:2px;border:none;border-radius:1px;cursor:pointer;text-decoration:none;transition:all .25s;}
+.btn-yt:hover{background:#cc0000;transform:translateY(-2px);box-shadow:0 10px 30px rgba(255,0,0,.35);}
+.disc-box{margin-top:28px;background:rgba(245,192,64,.04);border:1px solid rgba(245,192,64,.14);border-radius:2px;padding:14px 18px;font-size:.78rem;color:#fde68a;line-height:1.7;}
+.disc-box strong{color:var(--gold);}
 
-    /* ========== COURSES PAGE ========== */
-    #page-courses { padding-top: 68px; }
-    .page-hero {
-      background: var(--bg2); border-bottom: 1px solid var(--border);
-      padding: 60px 80px;
-      background-image: linear-gradient(135deg, rgba(2,12,4,0.95) 0%, rgba(7,26,10,0.9) 100%);
-    }
-    .page-hero h1 {
-      font-family: 'Rajdhani', sans-serif; font-size: 2.8rem;
-      font-weight: 700; color: var(--white); margin-bottom: 12px;
-    }
-    .page-hero p { color: var(--text-muted); font-size: 1rem; max-width: 600px; }
+/* ═══════════ CONTACT ═══════════ */
+#contact-sec{background:var(--navy2);}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.contact-form-box{border:1px solid var(--border2);border-radius:2px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.contact-form-box iframe{width:100%;height:660px;display:block;background:var(--card);filter:invert(.93) hue-rotate(170deg) brightness(.87) saturate(1.4);}
+.contact-items{display:flex;flex-direction:column;gap:14px;}
+.c-link{display:flex;align-items:center;gap:16px;padding:18px 22px;background:var(--card);border:1px solid var(--border);border-left:2px solid var(--cyan);border-radius:1px;text-decoration:none;transition:all .25s;}
+.c-link:hover{border-left-color:var(--green);background:rgba(0,245,255,.025);transform:translateX(5px);}
+.c-link-ico{font-size:1.4rem;min-width:32px;}
+.c-link h4{font-size:.9rem;font-weight:700;color:var(--white);margin-bottom:3px;}
+.c-link p{font-size:.78rem;color:var(--muted);}
+.c-link:hover p{color:var(--cyan);}
 
-    /* ========== FREE RESOURCES PAGE ========== */
-    .resource-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .resource-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 8px; padding: 28px; transition: all 0.3s;
-    }
-    .resource-card:hover { border-color: var(--green-dim); transform: translateY(-3px); }
-    .resource-card h3 {
-      font-family: 'Rajdhani', sans-serif; font-size: 1.1rem;
-      font-weight: 700; color: var(--white); margin-bottom: 10px;
-    }
-    .resource-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 18px; }
+/* ═══════════ FOOTER ═══════════ */
+footer{background:var(--navy2);border-top:1px solid var(--border);padding:56px 80px 24px;position:relative;overflow:hidden;}
+footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),var(--green),var(--cyan),transparent);opacity:.35;}
+.footer-top{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr;gap:52px;margin-bottom:44px;}
+.f-brand img{height:42px;filter:drop-shadow(0 0 10px rgba(0,245,255,.4));margin-bottom:16px;display:block;}
+.f-brand p{font-size:.82rem;color:var(--muted);line-height:1.7;max-width:280px;}
+.f-socials{display:flex;gap:8px;margin-top:20px;}
+.f-soc{width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:2px;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:.9rem;transition:all .2s;}
+.f-soc:hover{border-color:var(--cyan);background:rgba(0,245,255,.06);box-shadow:0 0 14px rgba(0,245,255,.2);}
+.f-col h4{font-family:'Orbitron',monospace;font-size:.65rem;font-weight:700;color:var(--cyan);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:18px;}
+.f-col ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.f-col a{font-size:.82rem;color:var(--muted);text-decoration:none;transition:color .2s;}
+.f-col a:hover{color:var(--cyan);}
+.footer-disc{background:rgba(245,192,64,.04);border:1px solid rgba(245,192,64,.12);border-radius:2px;padding:14px 18px;font-size:.76rem;color:#fde68a;line-height:1.65;margin-bottom:20px;}
+.footer-disc strong{color:var(--gold);}
+.footer-bottom{border-top:1px solid var(--border);padding-top:18px;display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);}
 
-    /* ========== MODAL ========== */
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.85); backdrop-filter: blur(4px);
-      z-index: 9000; display: none; align-items: center; justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--card2); border: 1px solid var(--border);
-      border-radius: 12px; padding: 40px; max-width: 480px; width: 90%;
-      position: relative; animation: modalIn 0.3s ease;
-    }
-    @keyframes modalIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    .modal-close {
-      position: absolute; top: 16px; right: 16px;
-      background: none; border: none; color: var(--text-muted);
-      font-size: 1.3rem; cursor: pointer; transition: color 0.2s;
-    }
-    .modal-close:hover { color: var(--green); }
-    .modal h3 {
-      font-family: 'Rajdhani', sans-serif; font-size: 1.6rem;
-      font-weight: 700; color: var(--white); margin-bottom: 8px;
-    }
-    .modal p { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 24px; }
-    .modal .form-group { margin-bottom: 12px; }
+/* ═══════════ COURSES PAGE ═══════════ */
+.page-hero{margin-top:64px;background:var(--navy2);border-bottom:1px solid var(--border);padding:80px 80px 52px;position:relative;overflow:hidden;}
+.page-hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.3;}
+.page-hero h1{font-family:'Orbitron',monospace;font-size:2.6rem;font-weight:700;color:var(--white);margin-bottom:10px;}
+.page-hero p{color:var(--muted);font-size:.92rem;}
 
-    /* ========== WHATSAPP FLOAT ========== */
-    .wa-float {
-      position: fixed; bottom: 28px; right: 28px;
-      background: #25d366; border-radius: 50%;
-      width: 56px; height: 56px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem; text-decoration: none;
-      box-shadow: 0 4px 20px rgba(37,211,102,0.5);
-      z-index: 900; transition: all 0.2s;
-      animation: waPulse 2s infinite;
-    }
-    .wa-float:hover { transform: scale(1.1); }
-    @keyframes waPulse {
-      0%, 100% { box-shadow: 0 4px 20px rgba(37,211,102,0.5); }
-      50% { box-shadow: 0 4px 30px rgba(37,211,102,0.8); }
-    }
+/* ═══════════ RESOURCES PAGE ═══════════ */
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.res-card{background:var(--card);border:1px solid var(--border);border-radius:2px;padding:28px;transition:all .3s;}
+.res-card:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:0 14px 44px rgba(0,0,0,.4);}
+.res-ico{font-size:2.2rem;margin-bottom:14px;}
+.res-card h3{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:var(--white);margin-bottom:8px;}
+.res-card p{font-size:.8rem;color:var(--muted);line-height:1.65;margin-bottom:18px;}
+.gloss-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;margin-top:28px;}
+.gloss-item{background:var(--card);border:1px solid var(--border);border-left:2px solid var(--cyan);padding:16px 20px;border-radius:1px;}
+.gloss-item h4{font-family:'Syne',sans-serif;font-weight:700;color:var(--white);font-size:.88rem;margin-bottom:5px;}
+.gloss-item p{font-size:.78rem;color:var(--muted);line-height:1.6;}
 
-    /* ========== ANIMATIONS ========== */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
-    }
-    .fade-in {
-      opacity: 0; transform: translateY(24px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
+/* ═══════════ WA FLOAT ═══════════ */
+.wa-fab{position:fixed;bottom:28px;right:28px;z-index:900;width:54px;height:54px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;font-size:1.5rem;text-decoration:none;box-shadow:0 4px 20px rgba(37,211,102,.45);animation:wab 2.5s ease infinite;transition:transform .2s;}
+.wa-fab:hover{transform:scale(1.1);}
+@keyframes wab{0%,100%{box-shadow:0 4px 20px rgba(37,211,102,.45)}50%{box-shadow:0 4px 40px rgba(37,211,102,.8)}}
 
-    /* ========== RESPONSIVE ========== */
-    @media (max-width: 1024px) {
-      section { padding: 60px 40px; }
-      nav { padding: 0 24px; }
-      .hero-content { padding: 60px 40px; }
-      footer { padding: 40px 40px 20px; }
-      .footer-grid { grid-template-columns: 1fr 1fr; }
-      .about-grid, .yt-grid, .contact-grid { grid-template-columns: 1fr; }
-      .offer-grid, .courses-grid, .testi-grid, .resource-grid { grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 768px) {
-      section { padding: 50px 20px; }
-      nav { padding: 0 20px; }
-      .hero-content { padding: 50px 20px; }
-      footer { padding: 32px 20px 20px; }
-      .footer-grid { grid-template-columns: 1fr; gap: 28px; }
-      .nav-links { display: none; flex-direction: column; gap: 20px; position: absolute; top: 68px; left: 0; right: 0; background: rgba(2,12,4,0.98); border-bottom: 1px solid var(--border); padding: 24px; }
-      .nav-links.open { display: flex; }
-      .hamburger { display: flex; }
-      .offer-grid, .courses-grid, .testi-grid, .resource-grid { grid-template-columns: 1fr; }
-      .hero-stats { gap: 24px; }
-      .page-hero { padding: 40px 20px; }
-    }
-  </style>
+/* ═══════════ FADE IN ═══════════ */
+.fi{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;}
+.fi.v{opacity:1;transform:none;}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media(max-width:1100px){
+  section{padding:72px 40px;}
+  nav{padding:0 24px;}
+  .hero-content{padding:80px 40px;}
+  footer{padding:44px 40px 20px;}
+  .footer-top{grid-template-columns:1fr 1fr;gap:32px;}
+  .about-grid,.yt-grid,.contact-grid{grid-template-columns:1fr;}
+  .pillars-grid,.courses-grid,.testi-grid,.res-grid,.gloss-grid{grid-template-columns:1fr 1fr;}
+  .hero-badge{display:none;}
+}
+@media(max-width:720px){
+  section{padding:52px 20px;}
+  nav{padding:0 20px;}
+  .hero-content{padding:56px 20px;}
+  footer{padding:32px 20px 16px;}
+  .footer-top{grid-template-columns:1fr;gap:28px;}
+  .nav-links{display:none;flex-direction:column;position:absolute;top:64px;left:0;right:0;background:rgba(3,8,15,.97);border-bottom:1px solid var(--border);padding:24px 20px;gap:20px;}
+  .nav-links.open{display:flex;}
+  .hamburger{display:flex;}
+  .pillars-grid,.courses-grid,.testi-grid,.res-grid,.gloss-grid{grid-template-columns:1fr;}
+  .page-hero{padding:60px 20px 36px;}
+  #trust{padding:16px 20px;}
+  .trust-bar{gap:28px;}
+  .stats-inner{gap:0;flex-wrap:wrap;}
+  .stat-block{min-width:50%;}
+}
+</style>
 </head>
 <body>
 
-  <!-- CURSOR -->
-  <div class="cursor" id="cursor"></div>
-  <div class="cursor-follower" id="cursorFollower"></div>
+<!-- ═══ INTRO ═══ -->
+<div id="intro">
+  <canvas id="intro-canvas"></canvas>
+  <div class="intro-box">
+    <img class="intro-logo" src="logo.png" alt="Trading Fibb"/>
+    <div class="intro-brand">Trading <em>Fibb</em></div>
+    <div class="intro-line">// Initializing Smart Money Protocol<span class="intro-cursor">_</span></div>
+    <div class="intro-loader"></div>
+  </div>
+  <div class="intro-skip" onclick="skipIntro()">[ SKIP ]</div>
+</div>
 
-  <!-- WHATSAPP FLOAT -->
-  <a class="wa-float" href="https://wa.me/917005442985" target="_blank" title="Chat on WhatsApp">💬</a>
+<!-- ═══ WA FLOAT ═══ -->
+<a class="wa-fab" href="https://wa.me/917005442985" target="_blank" title="WhatsApp">💬</a>
 
-  <!-- ENROLL MODAL -->
-  <div class="modal-overlay" id="enrollModal">
-    <div class="modal">
-      <button class="modal-close" onclick="closeModal()">✕</button>
-      <h3 id="modalTitle">Enroll Now</h3>
-      <p id="modalDesc">Fill in your details and we'll get back to you within 24 hours.</p>
-      <div class="contact-form">
-        <div class="form-group"><label>Full Name</label><input type="text" placeholder="Your name" /></div>
-        <div class="form-group"><label>Mobile Number</label><input type="tel" placeholder="+91 XXXXX XXXXX" /></div>
-        <div class="form-group"><label>Email</label><input type="email" placeholder="your@email.com" /></div>
-        <div class="form-group"><label>Trading Experience</label>
-          <select>
-            <option>Beginner (0-1 year)</option>
-            <option>Intermediate (1-3 years)</option>
-            <option>Advanced (3+ years)</option>
-          </select>
-        </div>
-        <button class="btn-primary" style="width:100%;margin-top:8px" onclick="submitEnroll()">Submit Enquiry</button>
+<!-- ═══ NAV ═══ -->
+<nav id="mainNav">
+  <a class="nav-logo" href="#" onclick="showPage('home');return false;">
+    <img src="logo.png" alt="TF"/>
+    <span class="nav-wordmark">Trading <span>Fibb</span></span>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#" onclick="showPage('home');return false;">Home</a></li>
+    <li><a href="#" onclick="showPage('home');scrollTo('about');return false;">About</a></li>
+    <li><a href="#" onclick="showPage('courses-pg');return false;">Courses</a></li>
+    <li><a href="#" onclick="showPage('resources-pg');return false;">Resources</a></li>
+    <li><a href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank">YouTube</a></li>
+    <li><a href="#" onclick="showPage('home');scrollTo('contact-sec');return false;">Contact</a></li>
+    <li><a class="nav-cta" href="https://forms.gle/r9cBJ7JwEB9kQNCN8" target="_blank">Enroll Now</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- ════════════════════════════════
+     HOME PAGE
+════════════════════════════════ -->
+<div id="page-home" class="page active">
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg-photo"></div>
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-vignette"></div>
+    <div class="hero-content">
+      <div class="hero-chip"><div class="chip-dot"></div>Live Trading · Nifty50 · BankNifty Options</div>
+      <h1 class="hero-h1">
+        <span class="t-cyan">Smart Money</span>
+        <span>Concept</span>
+        <span class="t-green">Mastery</span>
+      </h1>
+      <p class="hero-sub">India's most structured SMC trading education. Learn exactly how institutions move markets — and consistently position yourself on the right side of every trade.</p>
+      <div class="hero-stats">
+        <div><div class="hstat-val">5K+</div><div class="hstat-lbl">Students</div></div>
+        <div><div class="hstat-val">3+</div><div class="hstat-lbl">Yrs Trading</div></div>
+        <div><div class="hstat-val">500+</div><div class="hstat-lbl">Live Sessions</div></div>
+        <div><div class="hstat-val">200+</div><div class="hstat-lbl">Free Videos</div></div>
       </div>
+      <div class="hero-btns">
+        <button class="btn-p" onclick="showPage('courses-pg')">⚡ Explore Courses</button>
+        <a class="btn-o" href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank">▶ Watch Free</a>
+      </div>
+    </div>
+    <div class="hero-badge">
+      <div class="hbadge-ring">
+        <div class="hbadge-inner">
+          <div class="hbadge-num">SMC</div>
+          <div class="hbadge-txt">Institutional<br>Framework</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST BAR -->
+  <div id="trust">
+    <div class="trust-bar">
+      <div class="trust-item"><span class="trust-icon">🇮🇳</span><strong>India's Premier</strong> SMC Educator</div>
+      <div class="trust-item"><span class="trust-icon">🎓</span><strong>5,000+</strong> Students Trained</div>
+      <div class="trust-item"><span class="trust-icon">📊</span>Nifty50 &amp; BankNifty <strong>Specialist</strong></div>
+      <div class="trust-item"><span class="trust-icon">🔴</span><strong>Daily</strong> Live Sessions</div>
+      <div class="trust-item"><span class="trust-icon">🔒</span>100% <strong>Educational</strong> Content</div>
     </div>
   </div>
 
-  <!-- NAVBAR -->
-  <nav>
-    <a class="nav-logo" href="#" onclick="showPage('home')">
-      <img src="logo.png" alt="Trading Fibb Logo" />
-      <span>Trading <em>Fibb</em></span>
-    </a>
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#" onclick="showPage('home')">Home</a></li>
-      <li><a href="#" onclick="showPage('home'); setTimeout(()=>scrollTo('about-strip'),100)">About</a></li>
-      <li><a href="#" onclick="showPage('courses')">Courses</a></li>
-      <li><a href="#" onclick="showPage('resources')">Free Resources</a></li>
-      <li><a href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank">YouTube</a></li>
-      <li><a href="#" onclick="showPage('home'); setTimeout(()=>scrollTo('contact'),100)">Contact</a></li>
-      <li><a href="#" class="nav-cta" onclick="openModal('Join Premium','Get exclusive access to all courses, live sessions & trade setups.')">Join Now</a></li>
-    </ul>
-    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
-      <span></span><span></span><span></span>
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-grid">
+      <div class="about-visual fi">
+        <div class="about-frame">
+          <img src="Banner.png" alt="Trading Fibb"/>
+          <div class="corner corner-tl"></div>
+          <div class="corner corner-tr"></div>
+          <div class="corner corner-bl"></div>
+          <div class="corner corner-br"></div>
+        </div>
+        <div class="about-floating">
+          <div class="about-fl-val">Trading Fibb</div>
+          <div class="about-fl-lbl">Smart Money Concept Trader</div>
+        </div>
+      </div>
+      <div class="fi">
+        <div class="s-eyebrow">About</div>
+        <h2 class="s-title">Who Is <span class="c">Trading Fibb</span>?</h2>
+        <p class="s-desc" style="margin-bottom:0;">A full-time SMC trader specializing in Nifty50 &amp; BankNifty F&amp;O. The mission — teach retail traders exactly how institutional money moves, so they can follow it and trade with confidence.</p>
+        <div class="about-feats">
+          <div class="afeat">
+            <div class="afeat-ico">🎯</div>
+            <div><h4>Smart Money Concepts (SMC)</h4><p>Order Blocks, Fair Value Gaps, Liquidity hunts, BOS &amp; CHoCH — the complete institutional framework applied to Indian markets.</p></div>
+          </div>
+          <div class="afeat">
+            <div class="afeat-ico">📊</div>
+            <div><h4>Options Trading Specialist</h4><p>Weekly expiry strategies for Nifty50 &amp; BankNifty with precise SMC-based entries and defined risk management.</p></div>
+          </div>
+          <div class="afeat">
+            <div class="afeat-ico">🔴</div>
+            <div><h4>Real Trades, Live Sessions</h4><p>Watch real trades execute in real time with full commentary — no theory without execution.</p></div>
+          </div>
+        </div>
+      </div>
     </div>
-  </nav>
+  </section>
 
-  <!-- ===================== HOME PAGE ===================== -->
-  <div id="page-home" class="page active">
-
-    <!-- HERO -->
-    <section id="hero">
-      <div class="hero-bg"></div>
-      <div class="hero-content">
-        <div class="hero-tag"><span></span> LIVE TRADING • NIFTY50 • BANKNIFTY</div>
-        <h1 class="hero-title">
-          Master the <span class="accent">Smart Money</span> Art of Trading
-        </h1>
-        <p class="hero-subtitle">
-          Learn institutional-grade Smart Money Concepts to trade Nifty50 & BankNifty Options with precision. No guesswork — only structure, liquidity & price action.
-        </p>
-        <div class="hero-stats">
-          <div class="hero-stat"><div class="hero-stat-num">5000+</div><div class="hero-stat-label">Students</div></div>
-          <div class="hero-stat"><div class="hero-stat-num">3+</div><div class="hero-stat-label">Years Experience</div></div>
-          <div class="hero-stat"><div class="hero-stat-num">500+</div><div class="hero-stat-label">Live Sessions</div></div>
-        </div>
-        <div class="hero-btns">
-          <button class="btn-primary" onclick="showPage('courses')">Explore Courses</button>
-          <a href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank" class="btn-secondary">▶ Free Content</a>
-        </div>
-      </div>
-
-      <!-- Ticker -->
-      <div class="ticker-bar">
-        <div class="ticker-inner">
-          <div class="ticker-item"><span class="ticker-name">NIFTY50</span><span class="ticker-price">22,147.90</span><span class="ticker-change up">▲ +0.84%</span></div>
-          <div class="ticker-item"><span class="ticker-name">BANKNIFTY</span><span class="ticker-price">47,823.15</span><span class="ticker-change up">▲ +1.12%</span></div>
-          <div class="ticker-item"><span class="ticker-name">SENSEX</span><span class="ticker-price">73,158.24</span><span class="ticker-change up">▲ +0.76%</span></div>
-          <div class="ticker-item"><span class="ticker-name">FINNIFTY</span><span class="ticker-price">20,941.60</span><span class="ticker-change down">▼ -0.21%</span></div>
-          <div class="ticker-item"><span class="ticker-name">MIDCAP</span><span class="ticker-price">10,213.40</span><span class="ticker-change up">▲ +0.33%</span></div>
-          <div class="ticker-item"><span class="ticker-name">VIX</span><span class="ticker-price">13.42</span><span class="ticker-change down">▼ -2.10%</span></div>
-          <!-- repeat for seamless loop -->
-          <div class="ticker-item"><span class="ticker-name">NIFTY50</span><span class="ticker-price">22,147.90</span><span class="ticker-change up">▲ +0.84%</span></div>
-          <div class="ticker-item"><span class="ticker-name">BANKNIFTY</span><span class="ticker-price">47,823.15</span><span class="ticker-change up">▲ +1.12%</span></div>
-          <div class="ticker-item"><span class="ticker-name">SENSEX</span><span class="ticker-price">73,158.24</span><span class="ticker-change up">▲ +0.76%</span></div>
-          <div class="ticker-item"><span class="ticker-name">FINNIFTY</span><span class="ticker-price">20,941.60</span><span class="ticker-change down">▼ -0.21%</span></div>
-          <div class="ticker-item"><span class="ticker-name">MIDCAP</span><span class="ticker-price">10,213.40</span><span class="ticker-change up">▲ +0.33%</span></div>
-          <div class="ticker-item"><span class="ticker-name">VIX</span><span class="ticker-price">13.42</span><span class="ticker-change down">▼ -2.10%</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ABOUT STRIP -->
-    <section id="about-strip">
-      <div class="about-grid">
-        <div class="about-img-wrap">
-          <img src="Banner.png" alt="Trading Fibb Banner" />
-          <div class="about-badge"><strong>Trading Fibb</strong>Smart Money Trader</div>
-        </div>
-        <div>
-          <div class="section-tag">About</div>
-          <h2 class="section-title">Who is <span class="g">Trading Fibb</span>?</h2>
-          <p class="section-desc">
-            A full-time Smart Money Concept (SMC) trader specializing in Nifty50 and BankNifty F&O. With years of live trading experience, the mission is to teach retail traders how institutional money actually moves — and how to follow it.
-          </p>
-          <div class="about-features">
-            <div class="about-feat">
-              <div class="about-feat-icon">🎯</div>
-              <div class="about-feat-text">
-                <strong>Smart Money Concept (SMC)</strong>
-                <span>Order blocks, Fair Value Gaps, Liquidity Hunts, BOS & CHoCH</span>
-              </div>
-            </div>
-            <div class="about-feat">
-              <div class="about-feat-icon">📊</div>
-              <div class="about-feat-text">
-                <strong>Options Trading — Nifty50 & BankNifty</strong>
-                <span>Weekly expiry strategies, risk management & trade setups</span>
-              </div>
-            </div>
-            <div class="about-feat">
-              <div class="about-feat-icon">🔴</div>
-              <div class="about-feat-text">
-                <strong>Live Sessions & Real Trades</strong>
-                <span>Daily market analysis and live call commentary on YouTube</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- WHAT WE OFFER -->
-    <section id="offer">
-      <div class="section-tag">What You Get</div>
-      <h2 class="section-title">Everything You Need to <span class="g">Trade Smart</span></h2>
-      <p class="section-desc">From foundational SMC theory to live setups — we cover it all.</p>
-      <div class="offer-grid">
-        <div class="offer-card fade-in">
-          <div class="offer-icon">📐</div>
-          <h3>SMC Framework</h3>
-          <p>Deep-dive into Order Blocks, FVG, Liquidity, Premium/Discount, BOS & CHoCH with real chart examples.</p>
-        </div>
-        <div class="offer-card fade-in">
-          <div class="offer-icon">📈</div>
-          <h3>Options Strategies</h3>
-          <p>Learn CE/PE directional trades, spreads, and how to play weekly expiry with defined risk.</p>
-        </div>
-        <div class="offer-card fade-in">
-          <div class="offer-icon">🔴</div>
-          <h3>Live Trading Sessions</h3>
-          <p>Watch real-time analysis of Nifty50 & BankNifty with entries, exits, and SL levels shared live.</p>
-        </div>
-        <div class="offer-card fade-in">
-          <div class="offer-icon">🧠</div>
-          <h3>Trading Psychology</h3>
-          <p>Control emotions, stick to your system, and develop the discipline of a professional trader.</p>
-        </div>
-        <div class="offer-card fade-in">
-          <div class="offer-icon">💬</div>
-          <h3>Community & Mentorship</h3>
-          <p>Join an active community of traders for doubt clearing, chart reviews, and peer accountability.</p>
-        </div>
-        <div class="offer-card fade-in">
-          <div class="offer-icon">📋</div>
-          <h3>Trade Journal Templates</h3>
-          <p>Get structured trade log templates to track performance and identify patterns in your trading.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- COURSES PREVIEW -->
-    <section id="courses" style="background:var(--bg2)">
-      <div class="section-tag">Courses</div>
-      <h2 class="section-title">Learn From <span class="g">Structured Courses</span></h2>
-      <p class="section-desc">Carefully designed modules to take you from zero to consistent — at your own pace.</p>
-      <div class="courses-grid">
-        <div class="course-card fade-in">
-          <div class="course-badge new">FREE</div>
-          <div class="course-img">📚</div>
-          <div class="course-body">
-            <div class="course-level">// Beginner</div>
-            <h3>SMC Foundations</h3>
-            <p>Free introductory series covering the basics of Smart Money Concepts. Start your journey here.</p>
-            <div class="course-meta">
-              <span>🎥 12 Videos</span>
-              <span>⏱ 6 Hours</span>
-            </div>
-            <div class="course-price">
-              <div class="price-tag" style="color:var(--green)">FREE</div>
-              <a href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank" class="btn-enroll-outline">Watch Now</a>
-            </div>
-          </div>
-        </div>
-        <div class="course-card featured fade-in">
-          <div class="course-badge">BESTSELLER</div>
-          <div class="course-img">⚡</div>
-          <div class="course-body">
-            <div class="course-level">// Intermediate</div>
-            <h3>SMC Complete Masterclass</h3>
-            <p>Full SMC course covering every concept with live chart examples on Nifty50 & BankNifty.</p>
-            <div class="course-meta">
-              <span>🎥 45 Videos</span>
-              <span>⏱ 25 Hours</span>
-              <span>🎓 Certificate</span>
-            </div>
-            <div class="course-price">
-              <div class="price-tag">₹4,999 <small>₹9,999</small></div>
-              <button class="btn-enroll" onclick="openModal('SMC Complete Masterclass','Get lifetime access to 45 videos, live chart examples and certificate.')">Enroll</button>
-            </div>
-          </div>
-        </div>
-        <div class="course-card fade-in">
-          <div class="course-img">🚀</div>
-          <div class="course-body">
-            <div class="course-level">// Advanced</div>
-            <h3>Options Mastery Program</h3>
-            <p>Advanced options strategies for Nifty & BankNifty weekly expiry, with live session access.</p>
-            <div class="course-meta">
-              <span>🎥 30 Videos</span>
-              <span>⏱ 18 Hours</span>
-              <span>📞 Live Q&A</span>
-            </div>
-            <div class="course-price">
-              <div class="price-tag">₹7,999 <small>₹14,999</small></div>
-              <button class="btn-enroll" onclick="openModal('Options Mastery Program','Get advanced options trading strategies with weekly live Q&A sessions.')">Enroll</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div style="text-align:center;margin-top:40px">
-        <button class="btn-secondary" onclick="showPage('courses')">View All Courses →</button>
-      </div>
-    </section>
-
-    <!-- TESTIMONIALS -->
-    <section id="testimonials">
-      <div class="section-tag">Student Reviews</div>
-      <h2 class="section-title">What Our <span class="g">Students Say</span></h2>
-      <div class="testi-grid">
-        <div class="testi-card fade-in">
-          <div class="testi-stars">★★★★★</div>
-          <p class="testi-text">"Trading Fibb completely changed how I look at charts. The SMC concepts are explained so clearly. My win rate has improved dramatically after the masterclass."</p>
-          <div class="testi-author">
-            <div class="testi-avatar">RK</div>
-            <div><div class="testi-name">Rahul Kumar</div><div class="testi-city">Delhi, India</div></div>
-          </div>
-        </div>
-        <div class="testi-card fade-in">
-          <div class="testi-stars">★★★★★</div>
-          <p class="testi-text">"The live sessions are gold. Watching live trades with real SL and targets — you can't get this anywhere else at this price. Best investment I made."</p>
-          <div class="testi-author">
-            <div class="testi-avatar">PS</div>
-            <div><div class="testi-name">Priya Sharma</div><div class="testi-city">Mumbai, India</div></div>
-          </div>
-        </div>
-        <div class="testi-card fade-in">
-          <div class="testi-stars">★★★★★</div>
-          <p class="testi-text">"I was struggling with BankNifty options for 2 years. After the Options Mastery program, I finally understand how institutional players move the market."</p>
-          <div class="testi-author">
-            <div class="testi-avatar">AM</div>
-            <div><div class="testi-name">Arjun Mehta</div><div class="testi-city">Bangalore, India</div></div>
-          </div>
-        </div>
-        <div class="testi-card fade-in">
-          <div class="testi-stars">★★★★★</div>
-          <p class="testi-text">"The community is very supportive. Daily doubt sessions and chart reviews keep me on track. Trading Fibb is not just a course — it's a complete trading school."</p>
-          <div class="testi-author">
-            <div class="testi-avatar">SP</div>
-            <div><div class="testi-name">Suresh Patil</div><div class="testi-city">Pune, India</div></div>
-          </div>
-        </div>
-        <div class="testi-card fade-in">
-          <div class="testi-stars">★★★★★</div>
-          <p class="testi-text">"Free content on YouTube itself is better than most paid courses I've seen. If this is free, imagine what's inside the paid course — absolutely worth it!"</p>
-          <div class="testi-author">
-            <div class="testi-avatar">VN</div>
-            <div><div class="testi-name">Vijay Nair</div><div class="testi-city">Chennai, India</div></div>
-          </div>
-        </div>
-        <div class="testi-card fade-in">
-          <div class="testi-stars">★★★★★</div>
-          <p class="testi-text">"The Fibonacci + SMC combination is unique to Trading Fibb. After applying these strategies I've had 3 consecutive profitable months. Highly recommended!"</p>
-          <div class="testi-author">
-            <div class="testi-avatar">DR</div>
-            <div><div class="testi-name">Deepak Rao</div><div class="testi-city">Hyderabad, India</div></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- YOUTUBE SECTION -->
-    <section id="youtube" style="background:var(--bg2)">
-      <div class="yt-grid">
-        <div class="yt-embed">
-          <iframe src="https://www.youtube.com/embed?listType=user_uploads&list=UCHok8tDxl47UKHCSLbmnJ3w" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-        <div class="yt-info">
-          <div class="section-tag">YouTube Channel</div>
-          <h2>Free Knowledge <br><span style="color:var(--green)">Every Day</span></h2>
-          <p style="color:var(--text-muted);line-height:1.7">Daily market analysis, live chart breakdowns, educational SMC content, and trade setups — all free on our YouTube channel.</p>
-          <div class="yt-stats">
-            <div><div class="yt-stat-num">5K+</div><div class="yt-stat-label">Subscribers</div></div>
-            <div><div class="yt-stat-num">200+</div><div class="yt-stat-label">Videos</div></div>
-            <div><div class="yt-stat-num">Daily</div><div class="yt-stat-label">Uploads</div></div>
-          </div>
-          <a class="btn-yt" href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank">
-            ▶ Subscribe Free
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section id="contact">
-      <div class="section-tag">Get In Touch</div>
-      <h2 class="section-title">Have Questions? <span class="g">Let's Talk.</span></h2>
-      <p class="section-desc">Reach out for course enquiries, collaborations, or anything trading.</p>
-      <div class="contact-grid">
-        <div class="contact-form" id="contactForm">
-          <input type="hidden" name="access_key" value="05416a88-de3d-4466-8189-f486c26ab92e" />
-          <input type="hidden" name="subject" value="New Enquiry — Trading Fibb Website" />
-          <input type="hidden" name="from_name" value="Trading Fibb Website" />
-          <div class="form-group"><label>Full Name</label><input type="text" id="cf_name" name="name" placeholder="Your full name" required /></div>
-          <div class="form-group"><label>Email</label><input type="email" id="cf_email" name="email" placeholder="your@email.com" required /></div>
-          <div class="form-group"><label>Mobile Number</label><input type="tel" id="cf_phone" name="phone" placeholder="+91 XXXXX XXXXX" /></div>
-          <div class="form-group"><label>Subject</label>
-            <select id="cf_subject" name="subject_type">
-              <option>Course Enquiry</option>
-              <option>Live Session Details</option>
-              <option>Mentorship</option>
-              <option>Collaboration</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div class="form-group"><label>Message</label><textarea id="cf_message" name="message" rows="5" placeholder="Your message..." required></textarea></div>
-          <div id="cf_status" style="display:none;padding:12px;border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:0.85rem;"></div>
-          <button class="btn-primary" onclick="submitContact()" id="cf_btn">Send Message →</button>
-        </div>
-        <div class="contact-info">
-          <div class="contact-item">
-            <div class="contact-icon">📺</div>
-            <div>
-              <h4>YouTube Channel</h4>
-              <p><a href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank">Trading Fibb — @TradingFibb</a></p>
-            </div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-icon">📱</div>
-            <div>
-              <h4>Telegram Community</h4>
-              <p><a href="https://t.me/tradingfibb" target="_blank">Join our free Telegram channel for daily setups</a></p>
-            </div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-icon">💬</div>
-            <div>
-              <h4>WhatsApp</h4>
-              <p><a href="https://wa.me/917005442985" target="_blank">Chat directly for course enquiries</a></p>
-            </div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-icon">🐦</div>
-            <div>
-              <h4>Twitter / X</h4>
-              <p><a href="https://x.com/TradingFibb" target="_blank">@TradingFibb — Daily market thoughts</a></p>
-            </div>
-          </div>
-          <div class="disclaimer">
-            <strong>⚠️ Disclaimer:</strong> Trading in F&O derivatives involves substantial risk of loss. All content provided by Trading Fibb is for educational purposes only and is NOT investment advice. Past performance does not guarantee future results. Trade responsibly.
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </div>
-  <!-- END HOME PAGE -->
-
-  <!-- ===================== COURSES PAGE ===================== -->
-  <div id="page-courses" class="page">
-    <div class="page-hero">
-      <div class="section-tag">All Courses</div>
-      <h1>Paid <span style="color:var(--green)">Courses</span></h1>
-      <p>Structured learning programs to take you from beginner to confident trader in the Indian markets.</p>
+  <!-- PILLARS -->
+  <section id="pillars">
+    <div class="s-eyebrow fi">What You Learn</div>
+    <h2 class="s-title fi">Built on <span class="g">6 Core Pillars</span></h2>
+    <p class="s-desc fi">Every module designed to build institutional-grade thinking from the ground up.</p>
+    <div class="pillars-grid">
+      <div class="pillar fi"><span class="pillar-ico">📐</span><div class="pillar-num">01</div><h3>SMC Framework</h3><p>Order Blocks, FVG, Premium &amp; Discount zones, Liquidity — the complete institutional model on real Nifty charts.</p></div>
+      <div class="pillar fi"><span class="pillar-ico">📈</span><div class="pillar-num">02</div><h3>Options Strategies</h3><p>CE/PE directional trades, spreads, how to play weekly expiry with defined risk and high-probability SMC confluence entries.</p></div>
+      <div class="pillar fi"><span class="pillar-ico">🔴</span><div class="pillar-num">03</div><h3>Live Trading Sessions</h3><p>Real-time Nifty50 &amp; BankNifty analysis with entries, exits and SL levels called out live — not after the fact.</p></div>
+      <div class="pillar fi"><span class="pillar-ico">🧠</span><div class="pillar-num">04</div><h3>Trading Psychology</h3><p>Develop the mental discipline to execute your system without fear, revenge trading or emotional decision-making.</p></div>
+      <div class="pillar fi"><span class="pillar-ico">💬</span><div class="pillar-num">05</div><h3>Community Access</h3><p>Active trader community for doubt clearing, live chart reviews, peer accountability and daily market insights.</p></div>
+      <div class="pillar fi"><span class="pillar-ico">📋</span><div class="pillar-num">06</div><h3>Trade Journal System</h3><p>Structured performance tracking to identify your edge, fix recurring mistakes and compound your win rate.</p></div>
     </div>
+  </section>
 
-    <section style="background:var(--bg)">
-      <div class="courses-grid">
-        <div class="course-card">
-          <div class="course-badge new">FREE</div>
-          <div class="course-img">📚</div>
-          <div class="course-body">
-            <div class="course-level">// Beginner</div>
-            <h3>SMC Foundations</h3>
-            <p>Complete beginner's guide to Smart Money Concepts. Understand how markets really work before placing a single trade.</p>
-            <div class="course-meta"><span>🎥 12 Videos</span><span>⏱ 6 Hours</span><span>📋 Notes</span></div>
-            <div style="margin-bottom:12px">
-              <p style="font-size:0.78rem;color:var(--text-muted);line-height:1.6">✅ Market Structure ✅ Liquidity Basics ✅ Order Blocks Intro ✅ FVG Introduction</p>
-            </div>
-            <div class="course-price">
-              <div class="price-tag" style="color:var(--green)">FREE</div>
-              <a href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank" class="btn-enroll-outline">Watch Free</a>
-            </div>
-          </div>
+  <!-- COURSES PREVIEW -->
+  <section id="courses-home">
+    <div class="s-eyebrow fi">Courses</div>
+    <h2 class="s-title fi">Start Your <span class="c">SMC Journey</span></h2>
+    <p class="s-desc fi">Structured programs from zero to professional — learn at your own pace.</p>
+    <div class="courses-grid">
+
+      <div class="c-card fi">
+        <div class="c-badge b-free">FREE</div>
+        <div class="c-thumb">
+          <img src="thumb1.png" alt="SMC Foundations" onerror="this.parentNode.innerHTML='<div class=\'c-thumb-placeholder\'><div class=\'p-ico\'>📚</div><div class=\'p-lbl\'>SMC Foundations</div></div>'"/>
+          <div class="c-thumb-overlay"></div>
+          <div class="c-lvl-tag">// BEGINNER</div>
         </div>
-
-        <div class="course-card featured">
-          <div class="course-badge">BESTSELLER</div>
-          <div class="course-img">⚡</div>
-          <div class="course-body">
-            <div class="course-level">// Intermediate</div>
-            <h3>SMC Complete Masterclass</h3>
-            <p>The most comprehensive SMC course with live Nifty50 & BankNifty chart analysis. From theory to execution.</p>
-            <div class="course-meta"><span>🎥 45 Videos</span><span>⏱ 25 Hours</span><span>🎓 Certificate</span></div>
-            <div style="margin-bottom:12px">
-              <p style="font-size:0.78rem;color:var(--text-muted);line-height:1.6">✅ Advanced Order Blocks ✅ Fair Value Gaps ✅ BOS & CHoCH ✅ HTF to LTF Analysis ✅ Trade Setups ✅ Risk Management</p>
-            </div>
-            <div class="course-price">
-              <div class="price-tag">₹4,999 <small>₹9,999</small></div>
-              <button class="btn-enroll" onclick="openModal('SMC Complete Masterclass','Lifetime access to 45 in-depth videos + certificate + community.')">Enroll Now</button>
-            </div>
+        <div class="c-body">
+          <div class="c-level">// Beginner Level</div>
+          <h3>SMC Foundations</h3>
+          <p>Free intro series — understand how institutional money actually structures the market before placing a single trade.</p>
+          <div class="c-meta"><span>🎥 12 Videos</span><span>⏱ 6 Hours</span><span>📋 Notes</span></div>
+          <div class="c-footer">
+            <span class="c-price-free">FREE</span>
+            <a class="btn-watch" href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank">Watch Now</a>
           </div>
-        </div>
-
-        <div class="course-card">
-          <div class="course-img">🚀</div>
-          <div class="course-body">
-            <div class="course-level">// Advanced</div>
-            <h3>Options Mastery Program</h3>
-            <p>Master weekly expiry options trading with SMC entries. CE/PE strategies, premium decay & hedging.</p>
-            <div class="course-meta"><span>🎥 30 Videos</span><span>⏱ 18 Hours</span><span>📞 Live Q&A</span></div>
-            <div style="margin-bottom:12px">
-              <p style="font-size:0.78rem;color:var(--text-muted);line-height:1.6">✅ Options Greeks ✅ Premium Selling ✅ SMC + Options Combo ✅ Expiry Strategies ✅ Scalping</p>
-            </div>
-            <div class="course-price">
-              <div class="price-tag">₹7,999 <small>₹14,999</small></div>
-              <button class="btn-enroll" onclick="openModal('Options Mastery Program','Advanced options program with weekly live Q&A sessions included.')">Enroll Now</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="course-card">
-          <div class="course-badge" style="background:var(--green);color:var(--bg)">NEW</div>
-          <div class="course-img">👑</div>
-          <div class="course-body">
-            <div class="course-level">// All Levels</div>
-            <h3>1-on-1 Mentorship</h3>
-            <p>Personalized mentorship program with direct access to Trading Fibb. Custom learning plan for your goals.</p>
-            <div class="course-meta"><span>📞 Weekly Calls</span><span>📊 Chart Reviews</span><span>⚡ Telegram Access</span></div>
-            <div style="margin-bottom:12px">
-              <p style="font-size:0.78rem;color:var(--text-muted);line-height:1.6">✅ Personalized Plan ✅ Trade Review ✅ 24/7 Doubt Clearing ✅ Monthly Performance Review</p>
-            </div>
-            <div class="course-price">
-              <div class="price-tag">₹14,999<span style="font-size:0.7rem;color:var(--text-muted)">/month</span></div>
-              <button class="btn-enroll" onclick="openModal('1-on-1 Mentorship','Limited seats available. Get personalized guidance from Trading Fibb.')">Apply</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="course-card">
-          <div class="course-img">💎</div>
-          <div class="course-body">
-            <div class="course-level">// All Levels</div>
-            <h3>Premium Combo — All Access</h3>
-            <p>Get all courses bundled together at a massive discount. Best value for serious traders.</p>
-            <div class="course-meta"><span>🎥 87 Videos</span><span>⏱ 49+ Hours</span><span>🎓 All Certs</span></div>
-            <div style="margin-bottom:12px">
-              <p style="font-size:0.78rem;color:var(--text-muted);line-height:1.6">✅ SMC Masterclass ✅ Options Program ✅ Live Sessions ✅ Lifetime Updates ✅ Priority Support</p>
-            </div>
-            <div class="course-price">
-              <div class="price-tag">₹9,999 <small>₹24,999</small></div>
-              <button class="btn-enroll" onclick="openModal('Premium Combo — All Access','Everything included. Lifetime access to all courses + future updates.')">Enroll Now</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="course-card" style="background:linear-gradient(135deg,var(--card),var(--card2));border-color:rgba(57,255,20,0.2);display:flex;align-items:center;justify-content:center;flex-direction:column;padding:40px;text-align:center;gap:16px">
-          <div style="font-size:3rem">🔔</div>
-          <h3 style="font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700;color:var(--white)">New Course Coming Soon</h3>
-          <p style="font-size:0.85rem;color:var(--text-muted)">Fibonacci + SMC Advanced Integration Course — get notified when it launches.</p>
-          <button class="btn-enroll-outline" onclick="openModal('Notify Me','Enter your email to get notified when the new Fibonacci SMC course launches.')">Notify Me</button>
         </div>
       </div>
 
-      <div style="margin-top:40px">
-        <div class="disclaimer">
-          <strong>⚠️ Disclaimer:</strong> All courses are for educational purposes only. Trading in F&O derivatives involves substantial financial risk. Results shown by students are individual and not guaranteed. Past performance does not guarantee future results. Please consult a SEBI-registered advisor before investing.
+      <div class="c-card feat fi">
+        <div class="c-badge b-hot">BESTSELLER</div>
+        <div class="c-thumb">
+          <img src="thumb2.png" alt="SMC Masterclass" onerror="this.parentNode.innerHTML='<div class=\'c-thumb-placeholder\'><div class=\'p-ico\'>⚡</div><div class=\'p-lbl\'>SMC Masterclass</div></div>'"/>
+          <div class="c-thumb-overlay"></div>
+          <div class="c-lvl-tag">// INTERMEDIATE</div>
+        </div>
+        <div class="c-body">
+          <div class="c-level">// Intermediate Level</div>
+          <h3>SMC Complete Masterclass</h3>
+          <p>Full institutional SMC curriculum with live Nifty50 &amp; BankNifty chart analysis and real trade walkthroughs.</p>
+          <div class="c-meta"><span>🎥 45 Videos</span><span>⏱ 25 Hours</span><span>🎓 Certificate</span></div>
+          <div class="c-footer">
+            <div><span class="c-price">₹4,999</span><span class="c-orig">₹9,999</span></div>
+            <button class="btn-enroll" onclick="openGForm()">Enroll Now</button>
+          </div>
         </div>
       </div>
-    </section>
+
+      <div class="c-card fi">
+        <div class="c-thumb">
+          <img src="thumb3.png" alt="Options Mastery" onerror="this.parentNode.innerHTML='<div class=\'c-thumb-placeholder\'><div class=\'p-ico\'>🚀</div><div class=\'p-lbl\'>Options Mastery</div></div>'"/>
+          <div class="c-thumb-overlay"></div>
+          <div class="c-lvl-tag">// ADVANCED</div>
+        </div>
+        <div class="c-body">
+          <div class="c-level">// Advanced Level</div>
+          <h3>Options Mastery Program</h3>
+          <p>Weekly expiry CE/PE strategies for Nifty &amp; BankNifty using SMC confluence — with live Q&amp;A access.</p>
+          <div class="c-meta"><span>🎥 30 Videos</span><span>⏱ 18 Hours</span><span>📞 Live Q&amp;A</span></div>
+          <div class="c-footer">
+            <div><span class="c-price">₹7,999</span><span class="c-orig">₹14,999</span></div>
+            <button class="btn-enroll" onclick="openGForm()">Enroll Now</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align:center;margin-top:48px;">
+      <button class="btn-o" onclick="showPage('courses-pg')">View All Courses &rarr;</button>
+    </div>
+  </section>
+
+  <!-- STATS BAND -->
+  <div id="stats-band">
+    <div class="stats-inner">
+      <div class="stat-block"><div class="stat-v">5000+</div><div class="stat-l">Students Enrolled</div></div>
+      <div class="stat-block"><div class="stat-v">3+</div><div class="stat-l">Years Trading F&amp;O</div></div>
+      <div class="stat-block"><div class="stat-v">200+</div><div class="stat-l">Free YouTube Videos</div></div>
+      <div class="stat-block"><div class="stat-v">500+</div><div class="stat-l">Live Sessions Done</div></div>
+      <div class="stat-block"><div class="stat-v">87%</div><div class="stat-l">Student Satisfaction</div></div>
+    </div>
   </div>
 
-  <!-- ===================== RESOURCES PAGE ===================== -->
-  <div id="page-resources" class="page">
-    <div class="page-hero" style="padding-top:80px">
-      <div class="section-tag">Free Resources</div>
-      <h1>Free <span style="color:var(--green)">Learning Hub</span></h1>
-      <p>Access free educational content, cheat sheets, and video resources to sharpen your trading.</p>
+  <!-- TESTIMONIALS -->
+  <section id="testimonials">
+    <div class="s-eyebrow fi">Social Proof</div>
+    <h2 class="s-title fi">Students <span class="g">Trust Us</span></h2>
+    <p class="s-desc fi">Real results from traders who followed the SMC system.</p>
+    <div class="testi-grid">
+      <div class="t-card fi"><div class="t-stars">★★★★★</div><div class="t-mark">"</div><p class="t-text">Trading Fibb completely changed how I read charts. The SMC concepts are taught so clearly — my win rate improved significantly after finishing the masterclass.</p><div class="t-author"><div class="t-av">RK</div><div><div class="t-name">Rahul Kumar</div><div class="t-city">Delhi, India</div></div></div></div>
+      <div class="t-card fi"><div class="t-stars">★★★★★</div><div class="t-mark">"</div><p class="t-text">The live sessions are pure gold. Watching real trades with actual entries and stop losses — you cannot get this quality anywhere at this price point. Best investment I made.</p><div class="t-author"><div class="t-av">PS</div><div><div class="t-name">Priya Sharma</div><div class="t-city">Mumbai, India</div></div></div></div>
+      <div class="t-card fi"><div class="t-stars">★★★★★</div><div class="t-mark">"</div><p class="t-text">I was struggling with BankNifty options for 2 years. After the Options Mastery program I finally understand exactly how institutional players structure moves before expiry.</p><div class="t-author"><div class="t-av">AM</div><div><div class="t-name">Arjun Mehta</div><div class="t-city">Bangalore, India</div></div></div></div>
+      <div class="t-card fi"><div class="t-stars">★★★★★</div><div class="t-mark">"</div><p class="t-text">The community is incredibly supportive. Daily doubt sessions and chart reviews keep me disciplined. Trading Fibb is not just a course — it is a complete trading ecosystem.</p><div class="t-author"><div class="t-av">SP</div><div><div class="t-name">Suresh Patil</div><div class="t-city">Pune, India</div></div></div></div>
+      <div class="t-card fi"><div class="t-stars">★★★★★</div><div class="t-mark">"</div><p class="t-text">The free YouTube content alone is better than most paid courses out there. If the free stuff is this good, the paid course is absolutely worth every single rupee.</p><div class="t-author"><div class="t-av">VN</div><div><div class="t-name">Vijay Nair</div><div class="t-city">Chennai, India</div></div></div></div>
+      <div class="t-card fi"><div class="t-stars">★★★★★</div><div class="t-mark">"</div><p class="t-text">Fibonacci + SMC is a combination I have not seen anywhere else. After applying these strategies I have had 3 consecutive profitable months. Highly recommended.</p><div class="t-author"><div class="t-av">DR</div><div><div class="t-name">Deepak Rao</div><div class="t-city">Hyderabad, India</div></div></div></div>
     </div>
+  </section>
 
-    <section style="background:var(--bg)">
-      <div class="section-tag">Study Material</div>
-      <h2 class="section-title">Free <span class="g">Resources</span></h2>
-      <div class="resource-grid">
-        <div class="resource-card">
-          <div style="font-size:2.5rem;margin-bottom:14px">📋</div>
-          <h3>SMC Cheat Sheet</h3>
-          <p>Quick reference guide for all SMC concepts — Order Blocks, FVG, Liquidity, BOS, CHoCH and more. Perfect for quick revision.</p>
-          <button class="btn-enroll-outline" onclick="openModal('SMC Cheat Sheet','Enter your email to receive the free SMC cheat sheet PDF.')">Download PDF</button>
+  <!-- YOUTUBE -->
+  <section id="yt-sec">
+    <div class="yt-grid">
+      <div class="fi">
+        <div class="s-eyebrow">YouTube Channel</div>
+        <div class="yt-video-wrap">
+          <iframe src="https://www.youtube.com/embed/gww6urv1FRs?rel=0&modestbranding=1" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
         </div>
-        <div class="resource-card">
-          <div style="font-size:2.5rem;margin-bottom:14px">📊</div>
-          <h3>Trade Journal Template</h3>
-          <p>Excel-based trade log to track your P&L, win rate, and RR ratio. Identify patterns and improve your performance.</p>
-          <button class="btn-enroll-outline" onclick="openModal('Trade Journal','Enter your email to receive the free Excel trade journal template.')">Download Excel</button>
-        </div>
-        <div class="resource-card">
-          <div style="font-size:2.5rem;margin-bottom:14px">🗓</div>
-          <h3>Market Calendar 2025</h3>
-          <p>NSE trading holidays, weekly expiry schedule for Nifty50 & BankNifty, and key economic events calendar.</p>
-          <button class="btn-enroll-outline" onclick="openModal('Market Calendar','Enter your email to receive the 2025 NSE market calendar.')">Download</button>
-        </div>
-        <div class="resource-card">
-          <div style="font-size:2.5rem;margin-bottom:14px">🎓</div>
-          <h3>SMC Video Playlist</h3>
-          <p>Curated playlist of all SMC foundation videos on YouTube — completely free. Watch in order for best learning experience.</p>
-          <a href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank" class="btn-enroll-outline">Watch on YouTube</a>
-        </div>
-        <div class="resource-card">
-          <div style="font-size:2.5rem;margin-bottom:14px">📰</div>
-          <h3>Weekly Market Analysis</h3>
-          <p>Every weekend, get a free Nifty50 & BankNifty analysis blog post with key levels, setups, and bias for the coming week.</p>
-          <button class="btn-enroll-outline" onclick="openModal('Weekly Analysis','Subscribe to get free weekly market analysis every Sunday.')">Subscribe Free</button>
-        </div>
-        <div class="resource-card">
-          <div style="font-size:2.5rem;margin-bottom:14px">💬</div>
-          <h3>Telegram Channel</h3>
-          <p>Join our free Telegram channel for daily market updates, quick chart observations, and important level alerts.</p>
-          <a href="https://t.me/tradingfibb" target="_blank" class="btn-enroll-outline">Join Telegram</a>
+        <div class="yt-widget-wrap">
+          <div class="iframely-embed"><div class="iframely-responsive" style="height:140px;padding-bottom:0;"><a href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" data-iframely-url="https://iframely.net/rn8Njd3c?theme=dark"></a></div></div>
         </div>
       </div>
-
-      <div style="margin-top:60px">
-        <div class="section-tag">Glossary</div>
-        <h2 class="section-title">SMC <span class="g">Key Terms</span></h2>
-        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:24px">
-          <div class="about-feat">
-            <div class="about-feat-icon">🟩</div>
-            <div class="about-feat-text"><strong>Order Block (OB)</strong><span>The last bearish/bullish candle before a significant move — acts as a support/resistance zone where institutions placed large orders.</span></div>
-          </div>
-          <div class="about-feat">
-            <div class="about-feat-icon">🔲</div>
-            <div class="about-feat-text"><strong>Fair Value Gap (FVG)</strong><span>An imbalance in price created by fast moves. Price tends to revisit these zones to rebalance before continuing its trend.</span></div>
-          </div>
-          <div class="about-feat">
-            <div class="about-feat-icon">💧</div>
-            <div class="about-feat-text"><strong>Liquidity</strong><span>Stop-loss clusters above swing highs (buy-side) or below swing lows (sell-side). Institutions hunt these levels before reversing.</span></div>
-          </div>
-          <div class="about-feat">
-            <div class="about-feat-icon">📊</div>
-            <div class="about-feat-text"><strong>BOS — Break of Structure</strong><span>When price creates a new higher high (in uptrend) or lower low (in downtrend), confirming continuation of trend.</span></div>
-          </div>
-          <div class="about-feat">
-            <div class="about-feat-icon">🔄</div>
-            <div class="about-feat-text"><strong>CHoCH — Change of Character</strong><span>First sign of a potential trend reversal. Price breaks opposite structure, signaling a shift in market direction.</span></div>
-          </div>
-          <div class="about-feat">
-            <div class="about-feat-icon">📐</div>
-            <div class="about-feat-text"><strong>Premium / Discount Zones</strong><span>Using the 50% level of a price range — above 50% is premium (expensive), below is discount (cheap). Buy in discount, sell in premium.</span></div>
-          </div>
+      <div class="yt-right fi">
+        <h2 class="s-title">Free Knowledge <span class="g">Every Day</span></h2>
+        <p style="color:var(--muted);line-height:1.8;font-size:.92rem;margin-bottom:0;">Daily Nifty50 &amp; BankNifty analysis, live chart breakdowns, educational SMC content — all completely free on YouTube.</p>
+        <div class="yt-stats">
+          <div><div class="ys-v">5K+</div><div class="ys-l">Subscribers</div></div>
+          <div><div class="ys-v">200+</div><div class="ys-l">Videos</div></div>
+          <div><div class="ys-v">Daily</div><div class="ys-l">Uploads</div></div>
         </div>
+        <a class="btn-yt" href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank">▶&nbsp;&nbsp;Subscribe Free</a>
+        <div class="disc-box"><strong>⚠️ Disclaimer:</strong> All channel content is strictly for educational purposes. Not investment advice. Trade at your own risk.</div>
       </div>
-    </section>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact-sec">
+    <div class="s-eyebrow fi">Get In Touch</div>
+    <h2 class="s-title fi">Have Questions? <span class="c">Let's Talk.</span></h2>
+    <p class="s-desc fi">Course enquiries, mentorship applications, or anything trading related — reach out directly.</p>
+    <div class="contact-grid">
+      <div class="contact-form-box fi">
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf-r9cBJ7JwEB9kQNCN8/viewform?embedded=true" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+      </div>
+      <div class="fi">
+        <div class="contact-items">
+          <a class="c-link" href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank"><div class="c-link-ico">📺</div><div><h4>YouTube Channel</h4><p>@TradingFibb — Daily market analysis &amp; education</p></div></a>
+          <a class="c-link" href="https://t.me/tradingfibb" target="_blank"><div class="c-link-ico">✈️</div><div><h4>Telegram Community</h4><p>Free daily setups, levels &amp; trade alerts</p></div></a>
+          <a class="c-link" href="https://wa.me/917005442985" target="_blank"><div class="c-link-ico">💬</div><div><h4>WhatsApp</h4><p>+91 7005442985 — Course enquiries &amp; support</p></div></a>
+          <a class="c-link" href="https://x.com/TradingFibb" target="_blank"><div class="c-link-ico">🐦</div><div><h4>Twitter / X</h4><p>@TradingFibb — Quick market observations</p></div></a>
+          <a class="c-link" href="https://www.instagram.com/tradingfibboffcl?igsh=MWhuM3BzOW8ycTlwMw==" target="_blank"><div class="c-link-ico">📸</div><div><h4>Instagram</h4><p>@tradingfibboffcl — Charts &amp; insights</p></div></a>
+        </div>
+        <div class="disc-box" style="margin-top:20px;"><strong>⚠️ Risk Warning:</strong> Trading F&amp;O derivatives carries substantial financial risk. All content is strictly educational and does NOT constitute investment advice. Please trade responsibly.</div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /home -->
+
+<!-- ════════════════════════════════
+     COURSES PAGE
+════════════════════════════════ -->
+<div id="page-courses-pg" class="page">
+  <div class="page-hero">
+    <div class="s-eyebrow">All Programs</div>
+    <h1>Trading <span style="color:var(--cyan)">Courses</span></h1>
+    <p>From beginner to advanced — structured programs designed for Indian retail traders.</p>
   </div>
+  <section style="background:var(--navy);">
+    <div class="courses-grid">
 
-  <!-- FOOTER (shared) -->
-  <footer id="site-footer">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <img src="logo.png" alt="Trading Fibb" />
-        <p>Smart Money Concept trader specializing in Nifty50 & BankNifty options. Teaching institutional trading strategies to retail traders across India.</p>
-        <div class="footer-socials">
-          <a href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank" class="social-btn" title="YouTube">▶️</a>
-          <a href="https://x.com/TradingFibb" target="_blank" class="social-btn" title="Twitter">🐦</a>
-          <a href="https://t.me/tradingfibb" target="_blank" class="social-btn" title="Telegram">✈️</a>
-          <a href="https://www.instagram.com/tradingfibboffcl?igsh=MWhuM3BzOW8ycTlwMw==" target="_blank" class="social-btn" title="Instagram">📸</a>
-          <a href="https://wa.me/917005442985" target="_blank" class="social-btn" title="WhatsApp">💬</a>
+      <div class="c-card fi">
+        <div class="c-badge b-free">FREE</div>
+        <div class="c-thumb">
+          <img src="thumb1.png" alt="SMC Foundations" onerror="this.parentNode.innerHTML='<div class=\'c-thumb-placeholder\'><div class=\'p-ico\'>📚</div><div class=\'p-lbl\'>SMC Foundations</div></div>'"/>
+          <div class="c-thumb-overlay"></div><div class="c-lvl-tag">// BEGINNER</div>
+        </div>
+        <div class="c-body">
+          <div class="c-level">// Beginner Level</div>
+          <h3>SMC Foundations</h3>
+          <p>Complete beginner's guide — understand how markets actually work at the institutional level before placing a trade.</p>
+          <div class="c-meta"><span>🎥 12 Videos</span><span>⏱ 6 Hours</span><span>📋 Study Notes</span></div>
+          <p style="font-size:.74rem;color:var(--muted);margin-bottom:16px;line-height:1.6;">✦ Market Structure ✦ Liquidity Basics ✦ Order Blocks Intro ✦ FVG Fundamentals</p>
+          <div class="c-footer"><span class="c-price-free">FREE</span><a class="btn-watch" href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank">Watch Free</a></div>
         </div>
       </div>
-      <div class="footer-col">
-        <h4>Quick Links</h4>
-        <ul>
-          <li><a href="#" onclick="showPage('home')">Home</a></li>
-          <li><a href="#" onclick="showPage('home');setTimeout(()=>scrollTo('about-strip'),100)">About</a></li>
-          <li><a href="#" onclick="showPage('courses')">Courses</a></li>
-          <li><a href="#" onclick="showPage('resources')">Free Resources</a></li>
-          <li><a href="#" onclick="showPage('home');setTimeout(()=>scrollTo('contact'),100)">Contact</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Courses</h4>
-        <ul>
-          <li><a href="#" onclick="showPage('courses')">SMC Foundations (Free)</a></li>
-          <li><a href="#" onclick="showPage('courses')">SMC Masterclass</a></li>
-          <li><a href="#" onclick="showPage('courses')">Options Mastery</a></li>
-          <li><a href="#" onclick="showPage('courses')">1-on-1 Mentorship</a></li>
-          <li><a href="#" onclick="showPage('courses')">All Access Combo</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Legal</h4>
-        <ul>
-          <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Terms & Conditions</a></li>
-          <li><a href="#">Refund Policy</a></li>
-          <li><a href="#">Disclaimer</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="disclaimer">
-      <strong>⚠️ Risk Disclaimer:</strong> Trading in financial derivatives (F&O) involves substantial risk of loss and is not suitable for all investors. All content on this website is strictly for educational and informational purposes only and does NOT constitute investment advice. Trading Fibb is not a SEBI-registered investment advisor. Please consult a qualified financial advisor before making any trading or investment decisions.
-    </div>
-    <div class="footer-bottom">
-      <span>© 2025 Trading Fibb. All rights reserved.</span>
-      <span>Made with ❤️ for Indian Traders</span>
-    </div>
-  </footer>
 
-  <script>
-    // ===== CURSOR =====
-    const cursor = document.getElementById('cursor');
-    const follower = document.getElementById('cursorFollower');
-    document.addEventListener('mousemove', e => {
-      cursor.style.left = e.clientX - 6 + 'px';
-      cursor.style.top = e.clientY - 6 + 'px';
-      setTimeout(() => {
-        follower.style.left = e.clientX - 16 + 'px';
-        follower.style.top = e.clientY - 16 + 'px';
-      }, 80);
+      <div class="c-card feat fi">
+        <div class="c-badge b-hot">BESTSELLER</div>
+        <div class="c-thumb">
+          <img src="thumb2.png" alt="SMC Masterclass" onerror="this.parentNode.innerHTML='<div class=\'c-thumb-placeholder\'><div class=\'p-ico\'>⚡</div><div class=\'p-lbl\'>SMC Masterclass</div></div>'"/>
+          <div class="c-thumb-overlay"></div><div class="c-lvl-tag">// INTERMEDIATE</div>
+        </div>
+        <div class="c-body">
+          <div class="c-level">// Intermediate Level</div>
+          <h3>SMC Complete Masterclass</h3>
+          <p>The most comprehensive SMC course — live Nifty50 &amp; BankNifty chart analysis and real trade walkthroughs.</p>
+          <div class="c-meta"><span>🎥 45 Videos</span><span>⏱ 25 Hours</span><span>🎓 Certificate</span></div>
+          <p style="font-size:.74rem;color:var(--muted);margin-bottom:16px;line-height:1.6;">✦ Advanced OB ✦ Fair Value Gaps ✦ BOS &amp; CHoCH ✦ HTF to LTF Analysis ✦ Live Setups ✦ Risk Management</p>
+          <div class="c-footer"><div><span class="c-price">₹4,999</span><span class="c-orig">₹9,999</span></div><button class="btn-enroll" onclick="openGForm()">Enroll Now</button></div>
+        </div>
+      </div>
+
+      <div class="c-card fi">
+        <div class="c-thumb">
+          <img src="thumb3.png" alt="Options Mastery" onerror="this.parentNode.innerHTML='<div class=\'c-thumb-placeholder\'><div class=\'p-ico\'>🚀</div><div class=\'p-lbl\'>Options Mastery</div></div>'"/>
+          <div class="c-thumb-overlay"></div><div class="c-lvl-tag">// ADVANCED</div>
+        </div>
+        <div class="c-body">
+          <div class="c-level">// Advanced Level</div>
+          <h3>Options Mastery Program</h3>
+          <p>Master weekly expiry CE/PE strategies with SMC confluence — premium decay, Greeks &amp; expiry-day scalping.</p>
+          <div class="c-meta"><span>🎥 30 Videos</span><span>⏱ 18 Hours</span><span>📞 Live Q&amp;A</span></div>
+          <p style="font-size:.74rem;color:var(--muted);margin-bottom:16px;line-height:1.6;">✦ Options Greeks ✦ Premium Selling ✦ SMC + Options Combo ✦ Expiry Strategies ✦ Scalping</p>
+          <div class="c-footer"><div><span class="c-price">₹7,999</span><span class="c-orig">₹14,999</span></div><button class="btn-enroll" onclick="openGForm()">Enroll Now</button></div>
+        </div>
+      </div>
+
+      <div class="c-card fi">
+        <div class="c-badge b-new">NEW</div>
+        <div class="c-thumb"><div class="c-thumb-placeholder"><div class="p-ico">👑</div><div class="p-lbl">1-on-1 Mentorship</div></div></div>
+        <div class="c-body">
+          <div class="c-level">// All Levels</div>
+          <h3>1-on-1 Mentorship</h3>
+          <p>Personalized mentorship with direct access to Trading Fibb. Custom trading plan built around your goals and schedule.</p>
+          <div class="c-meta"><span>📞 Weekly Calls</span><span>📊 Chart Reviews</span><span>⚡ Priority</span></div>
+          <p style="font-size:.74rem;color:var(--muted);margin-bottom:16px;line-height:1.6;">✦ Personalized Plan ✦ Trade Reviews ✦ 24/7 Doubt Clearing ✦ Monthly P&amp;L Analysis</p>
+          <div class="c-footer"><div><span class="c-price" style="font-size:1.1rem;">₹14,999</span><span class="c-orig" style="text-decoration:none;font-size:.68rem;color:var(--muted);">/month</span></div><button class="btn-enroll" onclick="openGForm()">Apply Now</button></div>
+        </div>
+      </div>
+
+      <div class="c-card fi">
+        <div class="c-thumb"><div class="c-thumb-placeholder"><div class="p-ico">💎</div><div class="p-lbl">All Access Combo</div></div></div>
+        <div class="c-body">
+          <div class="c-level">// Best Value</div>
+          <h3>Premium All Access Combo</h3>
+          <p>Every course bundled at a massive discount — the complete Trading Fibb ecosystem with lifetime updates.</p>
+          <div class="c-meta"><span>🎥 87 Videos</span><span>⏱ 49+ Hours</span><span>🎓 All Certs</span></div>
+          <p style="font-size:.74rem;color:var(--muted);margin-bottom:16px;line-height:1.6;">✦ SMC Masterclass ✦ Options Program ✦ Live Sessions ✦ Lifetime Updates ✦ Priority Support</p>
+          <div class="c-footer"><div><span class="c-price">₹9,999</span><span class="c-orig">₹24,999</span></div><button class="btn-enroll" onclick="openGForm()">Enroll Now</button></div>
+        </div>
+      </div>
+
+      <div class="c-card fi" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:48px 32px;text-align:center;border-color:rgba(0,245,255,.1);">
+        <div style="font-size:3rem">🔔</div>
+        <h3 style="font-family:'Syne',sans-serif;font-weight:700;color:var(--white);">New Course — Coming Soon</h3>
+        <p style="font-size:.82rem;color:var(--muted);">Fibonacci + SMC Advanced Integration — get notified at launch.</p>
+        <button class="btn-o" onclick="openGForm()">Notify Me</button>
+      </div>
+
+    </div>
+    <div class="disc-box" style="margin-top:44px;"><strong>⚠️ Disclaimer:</strong> All courses are for educational purposes only. Trading in F&amp;O derivatives involves substantial financial risk. Results vary between students. Past performance does not guarantee future results. Please consult a SEBI-registered advisor before making investment decisions.</div>
+  </section>
+</div>
+
+<!-- ════════════════════════════════
+     RESOURCES PAGE
+════════════════════════════════ -->
+<div id="page-resources-pg" class="page">
+  <div class="page-hero">
+    <div class="s-eyebrow">Free Resources</div>
+    <h1>Free <span style="color:var(--green)">Learning Hub</span></h1>
+    <p>Cheat sheets, templates, glossary and free video content — all at zero cost.</p>
+  </div>
+  <section style="background:var(--navy);">
+    <div class="s-eyebrow fi">Downloads</div>
+    <h2 class="s-title fi">Free <span class="c">Resources</span></h2>
+    <div class="res-grid">
+      <div class="res-card fi"><div class="res-ico">📋</div><h3>SMC Cheat Sheet</h3><p>Quick reference guide — OB, FVG, Liquidity, BOS &amp; CHoCH in one clean PDF. Perfect for pre-market review.</p><button class="btn-o" onclick="openGForm()" style="padding:10px 22px;font-size:.66rem;">Download PDF</button></div>
+      <div class="res-card fi"><div class="res-ico">📊</div><h3>Trade Journal Template</h3><p>Excel-based trade log to track P&amp;L, win rate and RR ratio — identify patterns and improve your edge systematically.</p><button class="btn-o" onclick="openGForm()" style="padding:10px 22px;font-size:.66rem;">Download Excel</button></div>
+      <div class="res-card fi"><div class="res-ico">🗓</div><h3>Market Calendar 2025</h3><p>NSE trading holidays, weekly expiry schedule for Nifty50 &amp; BankNifty and key macro economic events.</p><button class="btn-o" onclick="openGForm()" style="padding:10px 22px;font-size:.66rem;">Download</button></div>
+      <div class="res-card fi"><div class="res-ico">🎓</div><h3>SMC Video Playlist</h3><p>Curated free YouTube playlist of all SMC foundation videos. Watch in order for the best structured learning experience.</p><a href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank" class="btn-watch" style="padding:10px 22px;font-size:.66rem;">Watch on YouTube</a></div>
+      <div class="res-card fi"><div class="res-ico">📰</div><h3>Weekly Market Analysis</h3><p>Every Sunday — free Nifty50 &amp; BankNifty analysis with key S/R levels and directional bias for the coming week.</p><button class="btn-o" onclick="openGForm()" style="padding:10px 22px;font-size:.66rem;">Subscribe Free</button></div>
+      <div class="res-card fi"><div class="res-ico">✈️</div><h3>Telegram Channel</h3><p>Free daily market updates, quick chart observations and important level alerts posted before market open.</p><a href="https://t.me/tradingfibb" target="_blank" class="btn-o" style="padding:10px 22px;font-size:.66rem;text-decoration:none;display:inline-block;">Join Telegram</a></div>
+    </div>
+
+    <div style="margin-top:72px;">
+      <div class="s-eyebrow fi">Glossary</div>
+      <h2 class="s-title fi">SMC <span class="c">Key Terms</span></h2>
+      <p class="s-desc fi">Master the language of Smart Money before diving into the charts.</p>
+      <div class="gloss-grid">
+        <div class="gloss-item fi"><h4>Order Block (OB)</h4><p>The last bearish or bullish candle before a significant institutional move — acts as S/R zone where large orders were originally placed.</p></div>
+        <div class="gloss-item fi"><h4>Fair Value Gap (FVG)</h4><p>Price imbalance created by fast impulsive moves. Price tends to return to fill these gaps before continuing the trend.</p></div>
+        <div class="gloss-item fi"><h4>Liquidity</h4><p>Stop-loss clusters above swing highs (buy-side) or below swing lows (sell-side). Institutions hunt these before reversing direction.</p></div>
+        <div class="gloss-item fi"><h4>BOS — Break of Structure</h4><p>When price creates a new HH (bullish) or LL (bearish), confirming continuation of the prevailing trend direction.</p></div>
+        <div class="gloss-item fi"><h4>CHoCH — Change of Character</h4><p>First signal of a potential trend reversal. Price breaks the opposite structure, indicating a possible directional shift.</p></div>
+        <div class="gloss-item fi"><h4>Premium / Discount Zones</h4><p>Above 50% of a swing range is premium (expensive), below is discount (cheap). Institutional bias: buy discount, sell premium.</p></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER — shared -->
+<footer id="site-footer">
+  <div class="footer-top">
+    <div class="f-brand">
+      <img src="logo.png" alt="Trading Fibb"/>
+      <p>SMC trader specializing in Nifty50 &amp; BankNifty F&amp;O. Teaching institutional trading strategies to retail traders across India.</p>
+      <div class="f-socials">
+        <a class="f-soc" href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank">▶️</a>
+        <a class="f-soc" href="https://x.com/TradingFibb" target="_blank">🐦</a>
+        <a class="f-soc" href="https://t.me/tradingfibb" target="_blank">✈️</a>
+        <a class="f-soc" href="https://www.instagram.com/tradingfibboffcl?igsh=MWhuM3BzOW8ycTlwMw==" target="_blank">📸</a>
+        <a class="f-soc" href="https://wa.me/917005442985" target="_blank">💬</a>
+      </div>
+    </div>
+    <div class="f-col">
+      <h4>Navigate</h4>
+      <ul>
+        <li><a href="#" onclick="showPage('home');return false;">Home</a></li>
+        <li><a href="#" onclick="showPage('home');scrollTo('about');return false;">About</a></li>
+        <li><a href="#" onclick="showPage('courses-pg');return false;">Courses</a></li>
+        <li><a href="#" onclick="showPage('resources-pg');return false;">Free Resources</a></li>
+        <li><a href="#" onclick="showPage('home');scrollTo('contact-sec');return false;">Contact</a></li>
+      </ul>
+    </div>
+    <div class="f-col">
+      <h4>Courses</h4>
+      <ul>
+        <li><a href="#" onclick="showPage('courses-pg');return false;">SMC Foundations (Free)</a></li>
+        <li><a href="#" onclick="showPage('courses-pg');return false;">SMC Masterclass</a></li>
+        <li><a href="#" onclick="showPage('courses-pg');return false;">Options Mastery</a></li>
+        <li><a href="#" onclick="showPage('courses-pg');return false;">1-on-1 Mentorship</a></li>
+        <li><a href="#" onclick="showPage('courses-pg');return false;">All Access Combo</a></li>
+      </ul>
+    </div>
+    <div class="f-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms &amp; Conditions</a></li>
+        <li><a href="#">Refund Policy</a></li>
+        <li><a href="#">Disclaimer</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-disc"><strong>⚠️ Risk Disclaimer:</strong> Trading in financial derivatives (F&amp;O) involves substantial risk of loss and is not suitable for all investors. All content on this website is strictly for educational and informational purposes only and does NOT constitute investment advice. Trading Fibb is not a SEBI-registered investment advisor. Please consult a qualified financial advisor before making any trading or investment decisions. Past performance does not guarantee future results.</div>
+  <div class="footer-bottom">
+    <span>© 2025 Trading Fibb. All rights reserved.</span>
+    <span>Made for Indian Traders 🇮🇳</span>
+  </div>
+</footer>
+
+<script>
+/* ═══ INTRO CANVAS — Neural Network Particles ═══ */
+(function(){
+  const c=document.getElementById('intro-canvas');
+  const ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){
+    W=c.width=window.innerWidth; H=c.height=window.innerHeight;
+    pts=[];
+    for(let i=0;i<100;i++) pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,r:Math.random()*1.5+.4,hue:Math.random()>.6?'0,245,255':'0,255,136'});
+  }
+  let gone=false;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<130){ctx.strokeStyle=`rgba(0,245,255,${.22*(1-d/130)})`;ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();}
+      }
+    }
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(${p.hue},.85)`;ctx.fill();
     });
+    if(!gone) requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);
+  resize();draw();
+  window._stopIntroCanvas=()=>{gone=true;};
+})();
 
-    // ===== PAGE NAVIGATION =====
-    function showPage(name) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      const target = document.getElementById('page-' + name);
-      if (target) {
-        target.classList.add('active');
-        window.scrollTo(0, 0);
-        // Move footer inside active page's parent
-        document.body.appendChild(document.getElementById('site-footer'));
-      }
-      // close mobile menu
-      document.getElementById('navLinks').classList.remove('open');
-      // trigger fade-in on new page
-      setTimeout(triggerFadeIn, 100);
-    }
+let introGone=false;
+function skipIntro(){endIntro();}
+function endIntro(){
+  if(introGone)return; introGone=true;
+  if(window._stopIntroCanvas) window._stopIntroCanvas();
+  const el=document.getElementById('intro');
+  el.classList.add('out');
+  setTimeout(()=>{el.style.display='none';},850);
+}
+setTimeout(endIntro,3200);
 
-    function scrollTo(id) {
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // ===== HAMBURGER =====
-    function toggleMenu() {
-      document.getElementById('navLinks').classList.toggle('open');
-    }
-
-    // ===== MODAL =====
-    function openModal(title, desc) {
-      document.getElementById('modalTitle').textContent = title;
-      document.getElementById('modalDesc').textContent = desc;
-      document.getElementById('enrollModal').classList.add('open');
-    }
-    function closeModal() {
-      document.getElementById('enrollModal').classList.remove('open');
-    }
-    document.getElementById('enrollModal').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
+/* Zeus Sound */
+function zeus(){
+  try{
+    const ac=new(window.AudioContext||window.webkitAudioContext)();
+    const buf=ac.createBuffer(1,ac.sampleRate*1.3,ac.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,.45);
+    const s=ac.createBufferSource();s.buffer=buf;
+    const g=ac.createGain();g.gain.setValueAtTime(.45,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+1.3);
+    const f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=240;
+    s.connect(f);f.connect(g);g.connect(ac.destination);s.start();
+    [[110,.1,.8],[165,.55,1],[220,1.1,1.2]].forEach(([fr,st,dur])=>{
+      const o=ac.createOscillator(),og=ac.createGain();
+      o.type='sawtooth';o.frequency.value=fr;
+      og.gain.setValueAtTime(0,ac.currentTime+st);og.gain.linearRampToValueAtTime(.18,ac.currentTime+st+.07);og.gain.exponentialRampToValueAtTime(.001,ac.currentTime+st+dur);
+      const bf=ac.createBiquadFilter();bf.type='bandpass';bf.frequency.value=fr*2.4;
+      o.connect(bf);bf.connect(og);og.connect(ac.destination);o.start(ac.currentTime+st);o.stop(ac.currentTime+st+dur);
     });
-    function submitEnroll() {
-      closeModal();
-      alert('✅ Thank you! We\'ll contact you within 24 hours.');
-    }
-    async function submitContact() {
-      const name = document.getElementById('cf_name').value.trim();
-      const email = document.getElementById('cf_email').value.trim();
-      const message = document.getElementById('cf_message').value.trim();
-      const status = document.getElementById('cf_status');
-      const btn = document.getElementById('cf_btn');
+  }catch(e){}
+}
+document.addEventListener('click',zeus,{once:true});
+document.addEventListener('touchstart',zeus,{once:true});
+setTimeout(()=>{try{zeus();}catch(e){}},300);
 
-      if (!name || !email || !message) {
-        status.style.display = 'block';
-        status.style.background = 'rgba(248,113,113,0.1)';
-        status.style.border = '1px solid rgba(248,113,113,0.3)';
-        status.style.color = '#f87171';
-        status.textContent = '⚠ Please fill in Name, Email and Message.';
-        return;
-      }
+/* ═══ HERO CANVAS — Animated Candles + Grid ═══ */
+(function(){
+  const cv=document.getElementById('hero-canvas');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  let W,H,candles=[],pts=[],frame=0;
+  function resize(){
+    W=cv.width=cv.offsetWidth||window.innerWidth;
+    H=cv.height=cv.offsetHeight||window.innerHeight;
+    genPts();
+  }
+  function genPts(){
+    pts=[];
+    for(let i=0;i<40;i++) pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,r:Math.random()*.8+.3});
+  }
+  function genCandles(){
+    candles=[];let p=H*.5;
+    for(let i=0;i<50;i++){p+=(Math.random()-.47)*16;const body=4+Math.random()*28;const up=Math.random()>.43;const o=p,cl=up?p-body:p+body;candles.push({x:i*(W/50)+W/100,o,cl,h:Math.min(o,cl)-Math.random()*10,l:Math.max(o,cl)+Math.random()*10,up});}
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);frame++;
+    if(frame%100===0){candles.shift();let p=candles[candles.length-1]?.cl||H*.5;const body=4+Math.random()*28;const up=Math.random()>.43;const o=p,cl=up?p-body:p+body;candles.push({x:0,o,cl,h:Math.min(o,cl)-Math.random()*10,l:Math.max(o,cl)+Math.random()*10,up});candles.forEach((c,i)=>c.x=i*(W/50)+W/100);}
+    // grid
+    ctx.strokeStyle='rgba(0,245,255,.04)';ctx.lineWidth=1;
+    for(let i=0;i<=10;i++){ctx.beginPath();ctx.moveTo(0,i*H/10);ctx.lineTo(W,i*H/10);ctx.stroke();}
+    for(let i=0;i<=14;i++){ctx.beginPath();ctx.moveTo(i*W/14,0);ctx.lineTo(i*W/14,H);ctx.stroke();}
+    // candles
+    candles.forEach(c=>{
+      const upC='rgba(0,255,136,.22)',dnC='rgba(255,58,92,.18)';
+      const col=c.up?upC:dnC;
+      ctx.strokeStyle=col;ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(c.x,c.h);ctx.lineTo(c.x,c.l);ctx.stroke();
+      ctx.fillStyle=col;ctx.fillRect(c.x-4,Math.min(c.o,c.cl),8,Math.abs(c.o-c.cl)||1.5);
+    });
+    // floating dots
+    pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(0,245,255,.25)';ctx.fill();});
+    requestAnimationFrame(draw);
+  }
+  const ro=new ResizeObserver(()=>resize());
+  const hero=document.getElementById('hero');
+  if(hero)ro.observe(hero);
+  resize();genCandles();draw();
+})();
 
-      btn.textContent = 'Sending...';
-      btn.disabled = true;
+/* ═══ PAGE NAVIGATION ═══ */
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('page-'+name);
+  if(el){el.classList.add('active');window.scrollTo({top:0,behavior:'instant'});}
+  // move footer inside active page
+  const footer=document.getElementById('site-footer');
+  if(el&&footer)el.appendChild(footer);
+  document.getElementById('navLinks').classList.remove('open');
+  setTimeout(setupFI,80);
+}
 
-      const data = {
-        access_key: '05416a88-de3d-4466-8189-f486c26ab92e',
-        name,
-        email,
-        phone: document.getElementById('cf_phone').value,
-        subject: 'Trading Fibb — ' + document.getElementById('cf_subject').value,
-        message,
-        from_name: 'Trading Fibb Website'
-      };
+function scrollTo(id){
+  setTimeout(()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});},100);
+}
+function toggleMenu(){document.getElementById('navLinks').classList.toggle('open');}
 
-      try {
-        const res = await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify(data)
-        });
-        const json = await res.json();
-        if (json.success) {
-          status.style.display = 'block';
-          status.style.background = 'rgba(57,255,20,0.08)';
-          status.style.border = '1px solid rgba(57,255,20,0.3)';
-          status.style.color = 'var(--green)';
-          status.textContent = '✅ Message sent! We\'ll reply within 24 hours.';
-          document.getElementById('cf_name').value = '';
-          document.getElementById('cf_email').value = '';
-          document.getElementById('cf_phone').value = '';
-          document.getElementById('cf_message').value = '';
-          btn.textContent = 'Sent ✓';
-          setTimeout(() => { btn.textContent = 'Send Message →'; btn.disabled = false; }, 4000);
-        } else {
-          throw new Error('Failed');
-        }
-      } catch (e) {
-        status.style.display = 'block';
-        status.style.background = 'rgba(248,113,113,0.1)';
-        status.style.border = '1px solid rgba(248,113,113,0.3)';
-        status.style.color = '#f87171';
-        status.textContent = '❌ Something went wrong. Please try WhatsApp instead.';
-        btn.textContent = 'Send Message →';
-        btn.disabled = false;
-      }
-    }
+/* ═══ GOOGLE FORM ═══ */
+function openGForm(){window.open('https://forms.gle/r9cBJ7JwEB9kQNCN8','_blank');}
 
-    // ===== FADE IN OBSERVER =====
-    function triggerFadeIn() {
-      const obs = new IntersectionObserver((entries) => {
-        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-      }, { threshold: 0.1 });
-      document.querySelectorAll('.fade-in').forEach(el => { el.classList.remove('visible'); obs.observe(el); });
-    }
-    triggerFadeIn();
+/* ═══ FADE IN OBSERVER ═══ */
+function setupFI(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target);}});
+  },{threshold:.08,rootMargin:'0px 0px -30px 0px'});
+  document.querySelectorAll('.fi').forEach(el=>{el.classList.remove('v');obs.observe(el);});
+}
+setupFI();
 
-    // ===== LIVE TICKER (simulated price updates) =====
-    const prices = { NIFTY50: 22147.90, BANKNIFTY: 47823.15, SENSEX: 73158.24 };
-    setInterval(() => {
-      document.querySelectorAll('.ticker-price').forEach((el, i) => {
-        const keys = Object.keys(prices);
-        if (i < keys.length) {
-          const key = keys[i % keys.length];
-          prices[key] += (Math.random() - 0.5) * 20;
-          el.textContent = prices[key].toFixed(2);
-        }
-      });
-    }, 3000);
-  </script>
+// init footer inside home
+document.addEventListener('DOMContentLoaded',()=>{
+  const home=document.getElementById('page-home');
+  const footer=document.getElementById('site-footer');
+  if(home&&footer)home.appendChild(footer);
+});
+</script>
 </body>
 </html>
