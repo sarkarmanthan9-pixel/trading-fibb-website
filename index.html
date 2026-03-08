@@ -667,7 +667,7 @@
   <div class="cursor-follower" id="cursorFollower"></div>
 
   <!-- WHATSAPP FLOAT -->
-  <a class="wa-float" href="https://wa.me/91XXXXXXXXXX" target="_blank" title="Chat on WhatsApp">💬</a>
+  <a class="wa-float" href="https://wa.me/917005442985" target="_blank" title="Chat on WhatsApp">💬</a>
 
   <!-- ENROLL MODAL -->
   <div class="modal-overlay" id="enrollModal">
@@ -983,11 +983,15 @@
       <h2 class="section-title">Have Questions? <span class="g">Let's Talk.</span></h2>
       <p class="section-desc">Reach out for course enquiries, collaborations, or anything trading.</p>
       <div class="contact-grid">
-        <div class="contact-form">
-          <div class="form-group"><label>Full Name</label><input type="text" placeholder="Your full name" /></div>
-          <div class="form-group"><label>Email</label><input type="email" placeholder="your@email.com" /></div>
+        <div class="contact-form" id="contactForm">
+          <input type="hidden" name="access_key" value="05416a88-de3d-4466-8189-f486c26ab92e" />
+          <input type="hidden" name="subject" value="New Enquiry — Trading Fibb Website" />
+          <input type="hidden" name="from_name" value="Trading Fibb Website" />
+          <div class="form-group"><label>Full Name</label><input type="text" id="cf_name" name="name" placeholder="Your full name" required /></div>
+          <div class="form-group"><label>Email</label><input type="email" id="cf_email" name="email" placeholder="your@email.com" required /></div>
+          <div class="form-group"><label>Mobile Number</label><input type="tel" id="cf_phone" name="phone" placeholder="+91 XXXXX XXXXX" /></div>
           <div class="form-group"><label>Subject</label>
-            <select>
+            <select id="cf_subject" name="subject_type">
               <option>Course Enquiry</option>
               <option>Live Session Details</option>
               <option>Mentorship</option>
@@ -995,8 +999,9 @@
               <option>Other</option>
             </select>
           </div>
-          <div class="form-group"><label>Message</label><textarea rows="5" placeholder="Your message..."></textarea></div>
-          <button class="btn-primary" onclick="submitContact()">Send Message →</button>
+          <div class="form-group"><label>Message</label><textarea id="cf_message" name="message" rows="5" placeholder="Your message..." required></textarea></div>
+          <div id="cf_status" style="display:none;padding:12px;border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:0.85rem;"></div>
+          <button class="btn-primary" onclick="submitContact()" id="cf_btn">Send Message →</button>
         </div>
         <div class="contact-info">
           <div class="contact-item">
@@ -1010,21 +1015,21 @@
             <div class="contact-icon">📱</div>
             <div>
               <h4>Telegram Community</h4>
-              <p><a href="#">Join our free Telegram channel for daily setups</a></p>
+              <p><a href="https://t.me/tradingfibb" target="_blank">Join our free Telegram channel for daily setups</a></p>
             </div>
           </div>
           <div class="contact-item">
             <div class="contact-icon">💬</div>
             <div>
               <h4>WhatsApp</h4>
-              <p><a href="https://wa.me/91XXXXXXXXXX">Chat directly for course enquiries</a></p>
+              <p><a href="https://wa.me/917005442985" target="_blank">Chat directly for course enquiries</a></p>
             </div>
           </div>
           <div class="contact-item">
             <div class="contact-icon">🐦</div>
             <div>
               <h4>Twitter / X</h4>
-              <p><a href="#">@TradingFibb — Daily market thoughts</a></p>
+              <p><a href="https://x.com/TradingFibb" target="_blank">@TradingFibb — Daily market thoughts</a></p>
             </div>
           </div>
           <div class="disclaimer">
@@ -1197,7 +1202,7 @@
           <div style="font-size:2.5rem;margin-bottom:14px">💬</div>
           <h3>Telegram Channel</h3>
           <p>Join our free Telegram channel for daily market updates, quick chart observations, and important level alerts.</p>
-          <a href="#" class="btn-enroll-outline">Join Telegram</a>
+          <a href="https://t.me/tradingfibb" target="_blank" class="btn-enroll-outline">Join Telegram</a>
         </div>
       </div>
 
@@ -1242,9 +1247,10 @@
         <p>Smart Money Concept trader specializing in Nifty50 & BankNifty options. Teaching institutional trading strategies to retail traders across India.</p>
         <div class="footer-socials">
           <a href="https://www.youtube.com/channel/UCHok8tDxl47UKHCSLbmnJ3w" target="_blank" class="social-btn" title="YouTube">▶️</a>
-          <a href="#" class="social-btn" title="Twitter">🐦</a>
-          <a href="#" class="social-btn" title="Telegram">✈️</a>
-          <a href="#" class="social-btn" title="Instagram">📸</a>
+          <a href="https://x.com/TradingFibb" target="_blank" class="social-btn" title="Twitter">🐦</a>
+          <a href="https://t.me/tradingfibb" target="_blank" class="social-btn" title="Telegram">✈️</a>
+          <a href="https://www.instagram.com/tradingfibboffcl?igsh=MWhuM3BzOW8ycTlwMw==" target="_blank" class="social-btn" title="Instagram">📸</a>
+          <a href="https://wa.me/917005442985" target="_blank" class="social-btn" title="WhatsApp">💬</a>
         </div>
       </div>
       <div class="footer-col">
@@ -1341,8 +1347,66 @@
       closeModal();
       alert('✅ Thank you! We\'ll contact you within 24 hours.');
     }
-    function submitContact() {
-      alert('✅ Message sent! We\'ll reply within 24 hours.');
+    async function submitContact() {
+      const name = document.getElementById('cf_name').value.trim();
+      const email = document.getElementById('cf_email').value.trim();
+      const message = document.getElementById('cf_message').value.trim();
+      const status = document.getElementById('cf_status');
+      const btn = document.getElementById('cf_btn');
+
+      if (!name || !email || !message) {
+        status.style.display = 'block';
+        status.style.background = 'rgba(248,113,113,0.1)';
+        status.style.border = '1px solid rgba(248,113,113,0.3)';
+        status.style.color = '#f87171';
+        status.textContent = '⚠ Please fill in Name, Email and Message.';
+        return;
+      }
+
+      btn.textContent = 'Sending...';
+      btn.disabled = true;
+
+      const data = {
+        access_key: '05416a88-de3d-4466-8189-f486c26ab92e',
+        name,
+        email,
+        phone: document.getElementById('cf_phone').value,
+        subject: 'Trading Fibb — ' + document.getElementById('cf_subject').value,
+        message,
+        from_name: 'Trading Fibb Website'
+      };
+
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        if (json.success) {
+          status.style.display = 'block';
+          status.style.background = 'rgba(57,255,20,0.08)';
+          status.style.border = '1px solid rgba(57,255,20,0.3)';
+          status.style.color = 'var(--green)';
+          status.textContent = '✅ Message sent! We\'ll reply within 24 hours.';
+          document.getElementById('cf_name').value = '';
+          document.getElementById('cf_email').value = '';
+          document.getElementById('cf_phone').value = '';
+          document.getElementById('cf_message').value = '';
+          btn.textContent = 'Sent ✓';
+          setTimeout(() => { btn.textContent = 'Send Message →'; btn.disabled = false; }, 4000);
+        } else {
+          throw new Error('Failed');
+        }
+      } catch (e) {
+        status.style.display = 'block';
+        status.style.background = 'rgba(248,113,113,0.1)';
+        status.style.border = '1px solid rgba(248,113,113,0.3)';
+        status.style.color = '#f87171';
+        status.textContent = '❌ Something went wrong. Please try WhatsApp instead.';
+        btn.textContent = 'Send Message →';
+        btn.disabled = false;
+      }
     }
 
     // ===== FADE IN OBSERVER =====
